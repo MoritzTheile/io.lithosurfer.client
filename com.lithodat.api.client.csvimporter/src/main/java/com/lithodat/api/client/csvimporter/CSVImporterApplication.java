@@ -75,7 +75,7 @@ public class CSVImporterApplication {
 	 */
 	private LiteratureDTO mapRowToDTO(Map<String, String> rowAsMap) {
 
-		// The data transfer object has to be in sync with the API (e.g. attribute names).
+		// The data transfer object has to be in sync with the API (e.g. attribute names). So if the API changes the DTO has to be changed too.
 		LiteratureDTO literatureDTO = new LiteratureDTO();
 
 		literatureDTO.setAuthor(rowAsMap.get("author"));
