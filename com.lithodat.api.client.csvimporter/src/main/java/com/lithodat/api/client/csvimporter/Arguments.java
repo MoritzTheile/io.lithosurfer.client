@@ -6,7 +6,7 @@ public class Arguments {
 
 	// an enumeration to keep track of supported imports
 	public static enum IMPORT_TYPE {
-		LITERATURE
+		LITERATURE, MATERIAL
 	};
 
 	private final String endpoint;
@@ -48,7 +48,7 @@ public class Arguments {
 
 		if (!file.exists()) {
 
-			throw new Exception("File " + file.getName() + " does not exist.");
+			throw new Exception("File " + file.getAbsolutePath() + " does not exist.");
 
 		}
 
