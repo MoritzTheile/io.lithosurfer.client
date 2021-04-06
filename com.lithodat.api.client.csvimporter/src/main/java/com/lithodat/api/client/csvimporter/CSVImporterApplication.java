@@ -1,5 +1,6 @@
 package com.lithodat.api.client.csvimporter;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.boot.CommandLineRunner;
@@ -67,14 +68,34 @@ public class CSVImporterApplication {
 			if (IMPORT_TYPE.MATERIAL.equals(arguments.getImportType())) {
 				MaterialImporter importer = new MaterialImporter(jwtToken, arguments.getEndpoint());
 
+				Map<String, MaterialDTO> sourceId2MaterialDTO = new HashMap<String, MaterialDTO>();
 				// Uploading each row:
 				for (Map<String, String> rowAsMap : csvFileReader.getAllRowsAsMap()) {
 
 					MaterialDTO dto = mapRowToMaterialDTO(rowAsMap);
 
-					// The API will be called:
-					importer.upload(dto);
+					// The API will be called for create:
+					sourceId2MaterialDTO.put(dto.getSourceId(), importer.createOrUpdate(dto));
 
+				}
+
+				for (MaterialDTO dto : sourceId2MaterialDTO.values()) {
+
+					MaterialDTO parent1 = sourceId2MaterialDTO.get(dto.getRockParent());
+					if (parent1 != null) {
+						dto.setParent1Id(parent1.getId());
+					}
+
+					MaterialDTO parent2 = sourceId2MaterialDTO.get(dto.getRockParent2());
+					if (parent2 != null) {
+						dto.setParent2Id(parent2.getId());
+					}
+
+				}
+
+				for (MaterialDTO dto : sourceId2MaterialDTO.values()) {
+					// The API will be called for update:
+					importer.createOrUpdate(dto);
 				}
 			}
 

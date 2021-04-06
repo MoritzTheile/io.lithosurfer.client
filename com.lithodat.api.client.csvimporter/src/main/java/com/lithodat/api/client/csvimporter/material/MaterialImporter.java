@@ -35,23 +35,30 @@ public class MaterialImporter {
 		this.url = endpoint + "/api/materials";
 	}
 
-	public void upload(MaterialDTO literatureDTO) throws Exception {
+	public MaterialDTO createOrUpdate(MaterialDTO dto) throws Exception {
 
 		HttpEntity<String> entity = new HttpEntity<String>(
 
-				objectMapper.writeValueAsString(literatureDTO), httpHeaders
+				objectMapper.writeValueAsString(dto), httpHeaders
 
 		);
 
-		ResponseEntity<String> result = new RestTemplate().exchange(url, HttpMethod.POST, entity, String.class);
+		HttpMethod httpMethod = HttpMethod.POST;
 
-		if (result.getStatusCodeValue() < 200 || result.getStatusCodeValue() > 299) {
-			System.out.println("Error posting entity: " + objectMapper.writeValueAsString(literatureDTO));
-			System.out.println(result.getBody());
-		} else {
-			System.out.println("Uploaded entity: " + objectMapper.writeValueAsString(literatureDTO));
+		if (dto.getId() != null) {
+			httpMethod = HttpMethod.PUT;
 		}
 
+		ResponseEntity<String> result = new RestTemplate().exchange(url, httpMethod, entity, String.class);
+
+		if (result.getStatusCodeValue() < 200 || result.getStatusCodeValue() > 299) {
+			System.out.println("Error posting entity: " + objectMapper.writeValueAsString(dto));
+			System.out.println(result.getBody());
+		} else {
+			System.out.println("Uploaded entity: " + objectMapper.writeValueAsString(dto));
+		}
+
+		return objectMapper.readValue(result.getBody(), MaterialDTO.class);
 	}
 
 }
