@@ -154,7 +154,7 @@ public class CSVImporterApplication {
 
 		dto.setSourceId(shortTo256(rowAsMap.get("id")));
 		dto.setName(shortTo256(rowAsMap.get("name")));
-		dto.setDescription(shortTo256(rowAsMap.get("description")));
+		dto.setDescription(rowAsMap.get("description"));
 		dto.setEntrytype(shortTo256(rowAsMap.get("entrytype")));
 		dto.setDispformulasimple(shortTo256(rowAsMap.get("dispformulasimple")));
 		dto.setImpurities(shortTo256(rowAsMap.get("impurities")));

@@ -192,6 +192,13 @@ public class MaterialDTO implements Serializable {
 
 	private String rockRoot;
 
+	/**
+	 * The path from root to leave as a string. Useful for searching material by path.
+	 */
+	private String calcPath1;
+
+	private String calcPath2;
+
 	private Long parent1Id;
 
 	private String parent1Name;
@@ -920,6 +927,22 @@ public class MaterialDTO implements Serializable {
 		this.rockRoot = rockRoot;
 	}
 
+	public String getCalcPath1() {
+		return calcPath1;
+	}
+
+	public void setCalcPath1(String calcPath1) {
+		this.calcPath1 = calcPath1;
+	}
+
+	public String getCalcPath2() {
+		return calcPath2;
+	}
+
+	public void setCalcPath2(String calcPath2) {
+		this.calcPath2 = calcPath2;
+	}
+
 	public Long getParent1Id() {
 		return parent1Id;
 	}
@@ -1066,6 +1089,8 @@ public class MaterialDTO implements Serializable {
 				", rockParent='" + getRockParent() + "'" +
 				", rockParent2='" + getRockParent2() + "'" +
 				", rockRoot='" + getRockRoot() + "'" +
+				", calcPath1='" + getCalcPath1() + "'" +
+				", calcPath2='" + getCalcPath2() + "'" +
 				", parent1=" + getParent1Id() +
 				", parent1='" + getParent1Name() + "'" +
 				", parent2=" + getParent2Id() +
