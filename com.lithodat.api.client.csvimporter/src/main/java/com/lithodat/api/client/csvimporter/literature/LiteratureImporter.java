@@ -49,7 +49,7 @@ public class LiteratureImporter {
 			System.out.println("Error posting entity: " + objectMapper.writeValueAsString(literatureDTO));
 			System.out.println(result.getBody());
 		} else {
-			System.out.println("Uploaded entity: " + objectMapper.writeValueAsString(literatureDTO));
+			// System.out.println("Uploaded entity: " + objectMapper.writeValueAsString(literatureDTO));
 		}
 
 	}

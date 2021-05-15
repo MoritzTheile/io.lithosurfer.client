@@ -192,6 +192,10 @@ public class MaterialDTO implements Serializable {
 
 	private String rockRoot;
 
+	private Integer treeDepth1;
+
+	private Integer treeDepth2;
+
 	/**
 	 * The path from root to leave as a string. Useful for searching material by path.
 	 */
@@ -1096,5 +1100,21 @@ public class MaterialDTO implements Serializable {
 				", parent2=" + getParent2Id() +
 				", parent2='" + getParent2Name() + "'" +
 				"}";
+	}
+
+	public Integer getTreeDepth1() {
+		return treeDepth1;
+	}
+
+	public void setTreeDepth1(Integer treeDepth1) {
+		this.treeDepth1 = treeDepth1;
+	}
+
+	public Integer getTreeDepth2() {
+		return treeDepth2;
+	}
+
+	public void setTreeDepth2(Integer treeDepth2) {
+		this.treeDepth2 = treeDepth2;
 	}
 }

@@ -1,7 +1,9 @@
 package com.lithodat.api.client.csvimporter;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -15,6 +17,7 @@ import com.lithodat.api.client.csvimporter.literature.LiteratureDTO;
 import com.lithodat.api.client.csvimporter.literature.LiteratureImporter;
 import com.lithodat.api.client.csvimporter.material.MaterialDTO;
 import com.lithodat.api.client.csvimporter.material.MaterialImporter;
+import com.lithodat.api.client.csvimporter.material.enumeration.MaterialKind;
 
 @SpringBootApplication
 public class CSVImporterApplication {
@@ -69,17 +72,37 @@ public class CSVImporterApplication {
 				MaterialImporter importer = new MaterialImporter(jwtToken, arguments.getEndpoint());
 
 				Map<String, MaterialDTO> sourceId2MaterialDTO = new HashMap<String, MaterialDTO>();
+
+				int counter = 0;
 				// Uploading each row:
 				for (Map<String, String> rowAsMap : csvFileReader.getAllRowsAsMap()) {
 
+					counter++;
+
+					if (counter % 250 == 0) {
+						System.out.println("uploaded " + counter);
+					}
+
+					//					if (counter > 100) {
+					//						System.out.println("Attention: import limited to 1000 lines!!!");
+					//						break;
+					//					}
+
 					MaterialDTO dto = mapRowToMaterialDTO(rowAsMap);
+
+					markLithologies(dto);
+					markMinerals(dto);
 
 					// The API will be called for create:
 					sourceId2MaterialDTO.put(dto.getSourceId(), importer.createOrUpdate(dto));
 
 				}
-
+				counter = 0;
 				for (MaterialDTO dto : sourceId2MaterialDTO.values()) {
+					counter++;
+					if (counter % 100 == 0) {
+						System.out.println("setting parent " + counter);
+					}
 
 					MaterialDTO parent1 = sourceId2MaterialDTO.get(dto.getRockParent());
 					if (parent1 != null) {
@@ -92,8 +115,29 @@ public class CSVImporterApplication {
 					}
 
 				}
-
+				counter = 0;
 				for (MaterialDTO dto : sourceId2MaterialDTO.values()) {
+
+					counter++;
+
+					if (counter % 100 == 0) {
+						System.out.println("setting tree depth " + counter);
+					}
+
+					dto.setTreeDepth1(incrementCounterTillRoot1(sourceId2MaterialDTO, 0, dto, new HashSet<MaterialDTO>()));
+					dto.setTreeDepth2(incrementCounterTillRoot2(sourceId2MaterialDTO, 0, dto, new HashSet<MaterialDTO>()));
+
+					dto.setCalcPath1(shortTo256(concatPathTillRoot1(sourceId2MaterialDTO, "", dto, new HashSet<MaterialDTO>())));
+					dto.setCalcPath2(shortTo256(concatPathTillRoot2(sourceId2MaterialDTO, "", dto, new HashSet<MaterialDTO>())));
+
+				}
+
+				counter = 0;
+				for (MaterialDTO dto : sourceId2MaterialDTO.values()) {
+					counter++;
+					if (counter % 100 == 0) {
+						System.out.println("updating " + counter);
+					}
 					// The API will be called for update:
 					importer.createOrUpdate(dto);
 				}
@@ -105,6 +149,123 @@ public class CSVImporterApplication {
 			}
 
 		};
+	}
+
+	private String concatPathTillRoot1(Map<String, MaterialDTO> sourceId2MaterialDTO, String path, MaterialDTO dto, Set<MaterialDTO> loopPreventer) {
+
+		loopPreventer.add(dto);
+
+		MaterialDTO parentDTO = sourceId2MaterialDTO.get(dto.getRockParent());
+
+		path = dto.getName() + "/" + path;
+
+		if (parentDTO == null || loopPreventer.contains(parentDTO)) {
+			return path;
+		} else {
+			return concatPathTillRoot1(sourceId2MaterialDTO, path, parentDTO, loopPreventer);
+		}
+
+	}
+
+	private String concatPathTillRoot2(Map<String, MaterialDTO> sourceId2MaterialDTO, String path, MaterialDTO dto, Set<MaterialDTO> loopPreventer) {
+
+		loopPreventer.add(dto);
+
+		MaterialDTO parentDTO = sourceId2MaterialDTO.get(dto.getRockParent2());
+
+		path = "/" + dto.getName() + path;
+
+		if (parentDTO == null || loopPreventer.contains(parentDTO)) {
+			return path;
+		} else {
+			return concatPathTillRoot2(sourceId2MaterialDTO, path, parentDTO, loopPreventer);
+		}
+
+	}
+
+	private int incrementCounterTillRoot1(Map<String, MaterialDTO> sourceId2MaterialDTO, int counter, MaterialDTO dto, Set<MaterialDTO> loopPreventer) {
+
+		loopPreventer.add(dto);
+
+		MaterialDTO parentDTO = sourceId2MaterialDTO.get(dto.getRockParent());
+
+		if (parentDTO == null || loopPreventer.contains(parentDTO)) {
+			return counter;
+		} else {
+			counter++;
+			return incrementCounterTillRoot1(sourceId2MaterialDTO, counter, parentDTO, loopPreventer);
+		}
+
+	}
+
+	private int incrementCounterTillRoot2(Map<String, MaterialDTO> sourceId2MaterialDTO, int counter, MaterialDTO dto, Set<MaterialDTO> loopPreventer) {
+
+		loopPreventer.add(dto);
+
+		MaterialDTO parentDTO = sourceId2MaterialDTO.get(dto.getRockParent2());
+
+		if (parentDTO == null || loopPreventer.contains(parentDTO)) {
+			return counter;
+		} else {
+			counter++;
+			return incrementCounterTillRoot2(sourceId2MaterialDTO, counter, parentDTO, loopPreventer);
+		}
+	}
+
+	/* 
+	 * (see https://auscopegeoche-t2o4433.slack.com/archives/C01UPPG3135/p1618971718063800)
+	 * 
+	 * entry type 0 OR 1 OR 2 OR 3 
+	 * AND 
+	 * language set as ,, OR ,en, OR ,en,fr, OR ,en,fr,it, OR ,en,it, (note, all languagemain types should be permitted). Then from that narrowed down list, we should exclude all entities whose 
+	 * name contains integers or non-English characters (This would take care of most but perhaps not all synonyms - for instance many Spanish or Dutch mineral synonyms don't have accents or non-English characters. These we will probably have to manually exclude).
+	 */
+	private void markLithologies(MaterialDTO dto) {
+
+		if (!dto.getEntrytype().equals("0") && !dto.getEntrytype().equals("1") && !dto.getEntrytype().equals("2") && !dto.getEntrytype().equals("3")) {
+			return;
+		}
+
+		if (!isEnglischVocabulary(dto)) {
+			return;
+		}
+
+		dto.setMaterialKind(MaterialKind.LITHOLOGY);
+
+	}
+
+	private boolean isEnglischVocabulary(MaterialDTO dto) {
+
+		if (!dto.getLanguage().equals(",,") && !dto.getLanguage().equals(",en,") && !dto.getLanguage().equals(",en,fr,") && !dto.getLanguage().equals(",en,fr,it,") && !dto.getLanguage().equals(",en,it,")) {
+			return false;
+		}
+
+		if (!dto.getName().trim().matches("[A-Za-z]*")) {
+			return false;
+		}
+
+		return true;
+
+	}
+
+	/*
+	 * (see https://auscopegeoche-t2o4433.slack.com/archives/C01UPPG3135/p1618971718063800)
+	 * 
+	 * For querying of the database, we then might want to add minerals of 
+	 * entry type 4 (series) or 5 (mineral group) to the above list
+	 */
+	private void markMinerals(MaterialDTO dto) {
+
+		if (!dto.getEntrytype().equals("4") && !dto.getEntrytype().equals("5")) {
+			return;
+		}
+
+		if (!isEnglischVocabulary(dto)) {
+			return;
+		}
+
+		dto.setMaterialKind(MaterialKind.MINERAL);
+
 	}
 
 	/**

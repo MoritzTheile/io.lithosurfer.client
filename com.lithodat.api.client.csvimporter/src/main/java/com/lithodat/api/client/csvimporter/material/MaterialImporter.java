@@ -32,7 +32,7 @@ public class MaterialImporter {
 		objectMapper = new ObjectMapper();
 		objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
 
-		this.url = endpoint + "/api/materials";
+		this.url = endpoint + "/api/core/materials";
 	}
 
 	public MaterialDTO createOrUpdate(MaterialDTO dto) throws Exception {
@@ -55,7 +55,7 @@ public class MaterialImporter {
 			System.out.println("Error posting entity: " + objectMapper.writeValueAsString(dto));
 			System.out.println(result.getBody());
 		} else {
-			System.out.println("Uploaded entity: " + objectMapper.writeValueAsString(dto));
+			// System.out.println("Uploaded entity: " + objectMapper.writeValueAsString(dto));
 		}
 
 		return objectMapper.readValue(result.getBody(), MaterialDTO.class);
