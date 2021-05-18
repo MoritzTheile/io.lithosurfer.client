@@ -90,8 +90,8 @@ public class CSVImporterApplication {
 
 					MaterialDTO dto = mapRowToMaterialDTO(rowAsMap);
 
-					markLithologies(dto);
 					markMinerals(dto);
+					deleteMe_markMinerals(dto);
 
 					// The API will be called for create:
 					sourceId2MaterialDTO.put(dto.getSourceId(), importer.createOrUpdate(dto));
@@ -140,6 +140,28 @@ public class CSVImporterApplication {
 					}
 					// The API will be called for update:
 					importer.createOrUpdate(dto);
+				}
+			}
+
+			if (IMPORT_TYPE.FILTER_MATERIAL.equals(arguments.getImportType())) {
+				int counter = 0;
+				// Uploading each row:
+				for (Map<String, String> rowAsMap : csvFileReader.getAllRowsAsMap()) {
+
+					counter++;
+
+					//					if (counter % 250 == 0) {
+					//						System.out.println("filtered " + counter);
+					//					}
+
+					MaterialDTO dto = mapRowToMaterialDTO(rowAsMap);
+
+					markMinerals(dto);
+
+					if (MaterialKind.MINERAL.equals(dto.getMaterialKind())) {
+						System.out.println(dto.getSourceId());
+					}
+
 				}
 			}
 
@@ -220,7 +242,7 @@ public class CSVImporterApplication {
 	 * language set as ,, OR ,en, OR ,en,fr, OR ,en,fr,it, OR ,en,it, (note, all languagemain types should be permitted). Then from that narrowed down list, we should exclude all entities whose 
 	 * name contains integers or non-English characters (This would take care of most but perhaps not all synonyms - for instance many Spanish or Dutch mineral synonyms don't have accents or non-English characters. These we will probably have to manually exclude).
 	 */
-	private void markLithologies(MaterialDTO dto) {
+	private void markMinerals(MaterialDTO dto) {
 
 		if (!dto.getEntrytype().equals("0") && !dto.getEntrytype().equals("1") && !dto.getEntrytype().equals("2") && !dto.getEntrytype().equals("3")) {
 			return;
@@ -230,7 +252,7 @@ public class CSVImporterApplication {
 			return;
 		}
 
-		dto.setMaterialKind(MaterialKind.LITHOLOGY);
+		dto.setMaterialKind(MaterialKind.MINERAL);
 
 	}
 
@@ -240,12 +262,11 @@ public class CSVImporterApplication {
 			return false;
 		}
 
-		if (!dto.getName().trim().matches("[A-Za-z]*")) {
+		if (!dto.getName().trim().matches("[ \\(\\)/<>\\[\\]\"A-Za-z]*")) {
 			return false;
 		}
 
 		return true;
-
 	}
 
 	/*
@@ -254,7 +275,7 @@ public class CSVImporterApplication {
 	 * For querying of the database, we then might want to add minerals of 
 	 * entry type 4 (series) or 5 (mineral group) to the above list
 	 */
-	private void markMinerals(MaterialDTO dto) {
+	private void deleteMe_markMinerals(MaterialDTO dto) {
 
 		if (!dto.getEntrytype().equals("4") && !dto.getEntrytype().equals("5")) {
 			return;

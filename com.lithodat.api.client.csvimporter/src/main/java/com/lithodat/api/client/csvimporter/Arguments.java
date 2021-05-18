@@ -6,7 +6,7 @@ public class Arguments {
 
 	// an enumeration to keep track of supported imports
 	public static enum IMPORT_TYPE {
-		LITERATURE, MATERIAL
+		LITERATURE, MATERIAL, FILTER_MATERIAL
 	};
 
 	private final String endpoint;
