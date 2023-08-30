@@ -1,22 +1,27 @@
 package com.lithodat.api.client.csvimporter;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.client.HttpServerErrorException.InternalServerError;
+import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class Fundings {
 
+	private static final int PAGE_SIZE = 1000;
 	private final String fundingUrl;
 
 	public Fundings(String endpoint, String username, String password) {
@@ -51,6 +56,7 @@ public class Fundings {
 	}
 
 	public JsonNode getAllFundings(String token) throws Exception {
+
 		HttpHeaders headers = new HttpHeaders();
 
 		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
@@ -58,30 +64,41 @@ public class Fundings {
 		headers.setBearerAuth(token);
 
 		ObjectMapper objectMapper = new ObjectMapper();
-		JsonNode combinedResult = objectMapper.createObjectNode();
 
-		int page = 1;
-		int maxPage = 3;
+		int page = 0;
 
-		while (page <= maxPage) {
-			ResponseEntity<String> result = new RestTemplate().exchange(fundingUrl + "?page=" + page + "&size=" + (maxPage-page+1)*25,
-					HttpMethod.GET, new HttpEntity<String>(headers), String.class);
+		ArrayNode allNodes = objectMapper.createArrayNode();
 
-			JsonNode jsonNode = objectMapper.readTree(result.getBody());
+		JsonNode jsonNode = null;
 
-			if (jsonNode.isNull() || jsonNode.isEmpty()) {
-				break;
+		while (jsonNode == null || jsonNode.size() == PAGE_SIZE) {
+
+			ResponseEntity<String> result = new RestTemplate().exchange(fundingUrl + "?page=" + page + "&size=" + PAGE_SIZE, HttpMethod.GET, new HttpEntity<String>(headers), String.class);
+
+			jsonNode = objectMapper.readTree(result.getBody());
+
+			if (jsonNode.isArray()) {
+				
+				allNodes.addAll((ArrayNode) jsonNode);
+				
+			} else {
+
+				throw new Exception("jsonNode is supposed to be an array");
+
 			}
-			// Merge the result of each page into a single JsonNode
-			if (page == 1) {
-				combinedResult = jsonNode;
-			}
-			merge(combinedResult, jsonNode);
+			
 			page++;
+			
 		}
-
-		return combinedResult;
+		
+		return allNodes;
+		
 	}
+
+	// System.out.println("page: " + page + ", allNodes: "+allNodes.size());
+	// System.out.println(new
+	// ObjectMapper().configure(SerializationFeature.INDENT_OUTPUT,
+	// true).writeValueAsString(result));
 
 	public void putAllFundings(String token, JsonNode fundings) throws Exception {
 		HttpHeaders headers = new HttpHeaders();
@@ -100,8 +117,7 @@ public class Fundings {
 
 			ResponseEntity<String> result = null;
 			try {
-				result = new RestTemplate().exchange(fundingUrl, HttpMethod.PUT, entity,
-						String.class);
+				result = new RestTemplate().exchange(fundingUrl, HttpMethod.PUT, entity, String.class);
 			} catch (InternalServerError e) {
 				// If the funding already exists, update the name field
 				String id = funding.get("id").toString();
@@ -150,7 +166,7 @@ public class Fundings {
 				Fundings fundings = new Fundings("https://testapp.lithodat.com", "kimberlyz", "Kimberly1234");
 				JsonNode fundingsJsonNode = fundings.getAllFundings(authenticationKey);
 				// Start processing funds
-				fundingsJsonNode = FundingProcessor.processJsonFile(fundingsJsonNode);
+				// fundingsJsonNode = FundingProcessor.processJsonFile(fundingsJsonNode);
 				fundings.putAllFundings(authenticationKey, fundingsJsonNode);
 			} catch (Exception e) {
 				e.printStackTrace();
