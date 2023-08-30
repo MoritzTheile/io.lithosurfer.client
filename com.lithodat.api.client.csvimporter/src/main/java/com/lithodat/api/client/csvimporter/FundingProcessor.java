@@ -17,7 +17,7 @@ public class FundingProcessor {
                     objectNode.put("name", grandNumber);
                 }
             } else {
-                if (!name.contains(grandNumber))
+                if (grandNumber != null && !name.contains(grandNumber))
                     objectNode.put("name", name + " " + grandNumber);
             }
         }
