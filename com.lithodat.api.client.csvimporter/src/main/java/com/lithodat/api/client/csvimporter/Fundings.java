@@ -85,6 +85,7 @@ public class Fundings {
 				throw new Exception("jsonNode is supposed to be an array");
 			}
 			page++;
+			
 		}
 		return allNodes;
 	}
