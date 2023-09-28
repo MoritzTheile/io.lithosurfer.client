@@ -1,20 +1,23 @@
 package com.lithodat.api.client.csvimporter;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
+// import java.nio.file.Files;
+// import java.nio.file.Paths;
+// import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+// import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpServerErrorException.InternalServerError;
 import org.springframework.web.client.RestTemplate;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+// import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -23,12 +26,14 @@ public class Fundings {
 
 	private static final int PAGE_SIZE = 1000;
 	private final String fundingUrl;
+	private final String mergeUrl;
 
 	public Fundings(String endpoint, String username, String password) {
 
 		super();
 
 		this.fundingUrl = endpoint + "/api/core/fundings";
+		this.mergeUrl = endpoint + "/api/core/fundings/merge";
 
 	}
 
@@ -85,7 +90,7 @@ public class Fundings {
 				throw new Exception("jsonNode is supposed to be an array");
 			}
 			page++;
-			
+
 		}
 		return allNodes;
 	}
@@ -147,6 +152,67 @@ public class Fundings {
 		System.out.println("Total number of fundings successfully updated: " + sucessCount);
 	}
 
+	public void mergeDuplicates(String token, List<List<Integer>> duplicates) {
+		int initialCount = 0;
+		int postMergeCount = 0;
+
+		// Get initial count of fundings
+		try {
+			JsonNode initialFundings = getAllFundings(token);
+			initialCount = initialFundings.size();
+		} catch (Exception e) {
+			System.out.println("Error fetching initial fundings count.");
+			e.printStackTrace();
+		}
+
+		if (duplicates == null || duplicates.isEmpty()) {
+			return;
+		}
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.setBearerAuth(token);
+
+		for (List<Integer> duplicateSet : duplicates) {
+			if (duplicateSet.size() > 1) {
+				Integer survivorId = duplicateSet.get(0);
+				List<Integer> toBeDeletedIds = duplicateSet.subList(1, duplicateSet.size());
+
+				Map<String, Object> requestBody = new HashMap<>();
+				requestBody.put("survivorId", survivorId);
+				requestBody.put("toBeDeletedIds", toBeDeletedIds);
+
+				HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
+
+				try {
+					ResponseEntity<String> response = new RestTemplate().postForEntity(mergeUrl, entity, String.class);
+					// System.out.println("Merging for survivor ID: " + survivorId);
+
+					// if (response.getStatusCode() != HttpStatus.OK) {
+					// 	System.out.println("Failed to merge for survivor ID: " + survivorId);
+					// 	System.out.println("Response: " + response.getBody());
+					// }
+				} catch (Exception e) {
+					// System.out.println("Error merging for survivor ID: " + survivorId);
+					// e.printStackTrace();
+				}
+			}
+		}
+
+		// Get the count of fundings after merging
+		try {
+			JsonNode postMergeFundings = getAllFundings(token);
+			postMergeCount = postMergeFundings.size();
+		} catch (Exception e) {
+			// System.out.println("Error fetching post merge fundings count.");
+			// e.printStackTrace();
+		}
+
+		System.out.println("Funding count at start: " + initialCount);
+		System.out.println("Funding count after merge: " + postMergeCount);
+	}
+
 	public static void main(String[] args) {
 		LithoAuth lithoAuth = new LithoAuth("https://testapp.lithodat.com", "kimberlyz", "Kimberly1234");
 		String authenticationKey = null;
@@ -168,15 +234,21 @@ public class Fundings {
 				// Identify duplicates
 				List<IdentifyProcessor.ProcessedData> dataList = IdentifyProcessor.processJsonNode(fundingsJsonNode);
 				List<List<Integer>> duplicates = IdentifyProcessor.findDuplicates(dataList);
-				Map<String, Object> report = IdentifyProcessor.generateReport(duplicates);
-				ObjectMapper mapper = new ObjectMapper();
-				try {
-					String reportJson = mapper.writeValueAsString(report);
-					System.out.println(reportJson);
-					Files.write(Paths.get("report.json"), reportJson.getBytes());
-				} catch (JsonProcessingException e) {
-					e.printStackTrace();
-				}
+				// Map<String, Object> report = IdentifyProcessor.generateReport(duplicates);
+				// ObjectMapper mapper = new ObjectMapper();
+				// try {
+				// 	String reportJson = mapper.writeValueAsString(report);
+				// 	// System.out.println(reportJson);
+				// 	Files.write(Paths.get("report.json"), reportJson.getBytes());
+				// } catch (JsonProcessingException e) {
+				// 	e.printStackTrace();
+				// }
+
+				// Merge duplicates
+				// List<List<Integer>> duplicates = new ArrayList<>();
+				// duplicates.add(Arrays.asList(1381242, 1684417, 1739592, 2244192));
+				// duplicates.add(Arrays.asList(747075, 754402));
+				fundings.mergeDuplicates(authenticationKey, duplicates);
 
 			} catch (Exception e) {
 				e.printStackTrace();

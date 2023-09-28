@@ -59,6 +59,7 @@ public class IdentifyProcessor {
 
     public static List<List<Integer>> findDuplicates(List<ProcessedData> dataList) {
         Map<String, List<String>> map = new HashMap<>();
+
         for (ProcessedData data : dataList) {
             String key = data.fundingBodyName + "|" + data.name + "|" + data.year;
             List<String> ids = map.getOrDefault(key, new ArrayList<>());
@@ -77,6 +78,7 @@ public class IdentifyProcessor {
                 result.add(intIds);
             }
         }
+        result.sort((list1, list2) -> Integer.compare(list2.size(), list1.size()));
         return result;
     }
 
