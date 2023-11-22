@@ -29,8 +29,8 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import io.lithosurfer.client.LithoAuth;
-import io.lithosurfer.client.deduplication.DeduplicationApplication;
-import io.lithosurfer.client.deduplication.DeduplicationApplication.ProcessedLiterature;
+import io.lithosurfer.client.deduplication.StaticUtils;
+import io.lithosurfer.client.deduplication.StaticUtils.ProcessedLiterature;
 
 public class Literature {
     private static final int PAGE_SIZE = 1000;
@@ -383,10 +383,10 @@ public class Literature {
                 // literature.generateMandatory(literatureJsonNode);
                 // literature.countNonNullParams(literatureJsonNode);
 
-                List<DeduplicationApplication.ProcessedLiterature> dataList = DeduplicationApplication.processLiteratureJsonNode(literatureJsonNode);
-                List<List<Integer>> duplicates = DeduplicationApplication.findLiteratureDuplicates(dataList);
+                List<StaticUtils.ProcessedLiterature> dataList = StaticUtils.processLiteratureJsonNode(literatureJsonNode);
+                List<List<Integer>> duplicates = StaticUtils.findLiteratureDuplicates(dataList);
                 
-                Map<String, Object> report = DeduplicationApplication.generateLiteratureReport(duplicates);
+                Map<String, Object> report = StaticUtils.generateLiteratureReport(duplicates);
                 ObjectMapper mapper = new ObjectMapper();
 				try {
 					String reportJson = mapper.writeValueAsString(report);
