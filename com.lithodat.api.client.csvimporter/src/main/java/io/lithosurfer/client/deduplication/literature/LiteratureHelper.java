@@ -1,45 +1,34 @@
 package io.lithosurfer.client.deduplication.literature;
 
-import java.util.ArrayList;
+import java.io.File;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.io.File;
-import java.util.Iterator;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import io.lithosurfer.client.LithoAuth;
-import io.lithosurfer.client.deduplication.StaticUtils;
-import io.lithosurfer.client.deduplication.StaticUtils.ProcessedLiterature;
-
-public class Literature {
+public class LiteratureHelper {
     private static final int PAGE_SIZE = 1000;
     private final String literatureUrl;
     private final String mergeUrl;
 
-    public Literature(String endpoint, String username, String password) {
-
-        super();
+    public LiteratureHelper(String endpoint) {
 
         this.literatureUrl = endpoint + "/api/core/literature";
         this.mergeUrl = endpoint + "/api/core/literature/merge";
@@ -64,7 +53,7 @@ public class Literature {
 
         while (jsonNode == null || jsonNode.size() == PAGE_SIZE) {
 
-            ResponseEntity<String> result = new RestTemplate().exchange(
+        	ResponseEntity<String> result = new RestTemplate().exchange(
                     literatureUrl + "?page=" + page + "&size=" + PAGE_SIZE, HttpMethod.GET,
                     new HttpEntity<String>(headers), String.class);
 
@@ -300,18 +289,8 @@ public class Literature {
     //     System.out.println("Output written to: " + outputFile.getAbsolutePath());
     // }
 
-    public void mergeDuplicates(String token, List<List<Integer>> duplicates) {
-		int initialCount = 0;
-		int postMergeCount = 0;
-
-		try {
-			JsonNode initialFundings = getAllLiterature(token);
-			initialCount = initialFundings.size();
-		} catch (Exception e) {
-			System.out.println("Error fetching initial fundings count.");
-			e.printStackTrace();
-		}
-
+    public void mergeDuplicates(String token, List<List<Long>> duplicates) {
+		
 		if (duplicates == null || duplicates.isEmpty()) {
 			return;
 		}
@@ -321,10 +300,10 @@ public class Literature {
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		headers.setBearerAuth(token);
 
-		for (List<Integer> duplicateSet : duplicates) {
+		for (List<Long> duplicateSet : duplicates) {
 			if (duplicateSet.size() > 1) {
-				Integer survivorId = duplicateSet.get(0);
-				List<Integer> toBeDeletedIds = duplicateSet.subList(1, duplicateSet.size());
+				Long survivorId = duplicateSet.get(0);
+				List<Long> toBeDeletedIds = duplicateSet.subList(1, duplicateSet.size());
 
 				Map<String, Object> requestBody = new HashMap<>();
 				requestBody.put("survivorId", survivorId);
@@ -334,72 +313,19 @@ public class Literature {
 
 				try {
 					ResponseEntity<String> response = new RestTemplate().postForEntity(mergeUrl, entity, String.class);
-					// System.out.println("Merging for survivor ID: " + survivorId);
 
-					// if (response.getStatusCode() != HttpStatus.OK) {
-					// 	System.out.println("Failed to merge for survivor ID: " + survivorId);
-					// 	System.out.println("Response: " + response.getBody());
-					// }
+					// ATTENTION: this seems to be non OK even if merge was successful
+//					 if (response.getStatusCode() != HttpStatus.OK) {
+//					 	System.out.println("Failed to merge for survivor ID: " + survivorId);
+//					 	System.out.println("Response: " + response.getBody());
+//					 }
 				} catch (Exception e) {
-					// System.out.println("Error merging for survivor ID: " + survivorId);
-					// e.printStackTrace();
+					 e.printStackTrace();
 				}
 			}
 		}
 
-		// Get the count after merging
-		try {
-			JsonNode postMergeFundings = getAllLiterature(token);
-			postMergeCount = postMergeFundings.size();
-		} catch (Exception e) {
-			// System.out.println("Error fetching post merge fundings count.");
-			// e.printStackTrace();
-		}
-
-		System.out.println("Literature count at start: " + initialCount);
-		System.out.println("Literature count after merge: " + postMergeCount);
+		
 	}
 
-    public static void main(String[] args) {
-        LithoAuth lithoAuth = new LithoAuth("https://testapp.lithodat.com", "kimberlyz", "Kimberly1234");
-        String authenticationKey = null;
-        try {
-            authenticationKey = lithoAuth.authenticateAndGetJWT();
-            System.out.println("Authentication Key: " + authenticationKey);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        if (authenticationKey != null) {
-            try {
-                Literature literature = new Literature("https://testapp.lithodat.com", "kimberlyz", "Kimberly1234");
-                JsonNode literatureJsonNode = literature.getAllLiterature(authenticationKey);
-
-                // literature.cleanNull(authenticationKey, literatureJsonNode);
-                // literature.normalizeLitTypes(authenticationKey, literatureJsonNode);
-                // literatureJsonNode = literature.getAllLiterature(authenticationKey);
-
-                literature.analyzeLitType(literatureJsonNode);
-
-                // literature.generateMandatory(literatureJsonNode);
-                // literature.countNonNullParams(literatureJsonNode);
-
-                List<StaticUtils.ProcessedLiterature> dataList = StaticUtils.processLiteratureJsonNode(literatureJsonNode);
-                List<List<Integer>> duplicates = StaticUtils.findLiteratureDuplicates(dataList);
-                
-                Map<String, Object> report = StaticUtils.generateLiteratureReport(duplicates);
-                ObjectMapper mapper = new ObjectMapper();
-				try {
-					String reportJson = mapper.writeValueAsString(report);
-					Files.write(Paths.get("report_literature.json"), reportJson.getBytes());
-				} catch (JsonProcessingException e) {
-					e.printStackTrace();
-				}
-
-                literature.mergeDuplicates(authenticationKey, duplicates);
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
 }

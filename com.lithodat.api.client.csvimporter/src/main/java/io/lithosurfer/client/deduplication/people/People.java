@@ -17,21 +17,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
-import io.lithosurfer.client.LithoAuth;
-
 public class People {
     private static final int PAGE_SIZE = 1000;
-    private final String peopleUrl;
 
-    public People(String endpoint, String username, String password) {
-
-        super();
-
-        this.peopleUrl = endpoint + "/api/core/people";
-
-    }
-
-    public JsonNode getAllPeople(String token) throws Exception {
+    public JsonNode getAllPeople(String token, String peopleUrl) throws Exception {
 
         HttpHeaders headers = new HttpHeaders();
 
@@ -91,31 +80,5 @@ public class People {
             }
         }
         return duplicateIds;
-    }
-
-    public static void main(String[] args) {
-        LithoAuth lithoAuth = new LithoAuth("https://testapp.lithodat.com", "kimberlyz", "Kimberly1234");
-        String authenticationKey = null;
-        try {
-            authenticationKey = lithoAuth.authenticateAndGetJWT();
-            System.out.println("Authentication Key: " + authenticationKey);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        if (authenticationKey != null) {
-            try {
-                People people = new People("https://testapp.lithodat.com", "kimberlyz", "Kimberly1234");
-
-                JsonNode peopleJsonNode = people.getAllPeople(authenticationKey);
-
-                List<String> duplicateIds = people.getDuplicateIds(peopleJsonNode);
-
-                System.out.println("Total duplicates: " + duplicateIds.size());
-                System.out.println("Duplicate IDs: " + duplicateIds);
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
     }
 }

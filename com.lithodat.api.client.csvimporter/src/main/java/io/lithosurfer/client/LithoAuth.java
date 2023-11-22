@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class LithoAuth {
 
+	public final String endpoint;
 	private final String url;
 	private final String username;
 	private final String password;
@@ -23,6 +24,7 @@ public class LithoAuth {
 		super();
 
 		// this class knows the endpoint to use
+		this.endpoint = endpoint;
 		this.url = endpoint + "/api/authenticate";
 		this.username = username;
 		this.password = password;

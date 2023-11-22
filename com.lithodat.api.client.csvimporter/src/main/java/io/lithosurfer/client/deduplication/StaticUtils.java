@@ -173,7 +173,7 @@ public class StaticUtils {
         return processedDataList;
     }
 
-    public static List<List<Integer>> findLiteratureDuplicates(List<ProcessedLiterature> dataList) {
+    public static List<List<Long>> findLiteratureDuplicates(List<ProcessedLiterature> dataList) {
         Map<String, List<String>> map = new HashMap<>();
 
         for (ProcessedLiterature data : dataList) {
@@ -187,12 +187,12 @@ public class StaticUtils {
             map.put(key, ids);
         }
 
-        List<List<Integer>> result = new ArrayList<>();
+        List<List<Long>> result = new ArrayList<>();
         for (List<String> ids : map.values()) {
             if (ids.size() > 1) {
-                List<Integer> intIds = new ArrayList<>();
+                List<Long> intIds = new ArrayList<>();
                 for (String id : ids) {
-                    intIds.add(Integer.parseInt(id));
+                    intIds.add(Long.parseLong(id));
                 }
                 result.add(intIds);
             }
@@ -201,7 +201,7 @@ public class StaticUtils {
         return result;
     }
 
-    public static Map<String, Object> generateLiteratureReport(List<List<Integer>> duplicates) {
+    public static Map<String, Object> generateLiteratureReport(List<List<Long>> duplicates) {
         int totalSets = duplicates.size();
         int biggestSize = duplicates.stream().mapToInt(List::size).max().orElse(0);
         int totalIds = duplicates.stream().mapToInt(List::size).sum();
@@ -218,7 +218,7 @@ public class StaticUtils {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode jsonNode = mapper.readTree(jsonString);
         List<StaticUtils.ProcessedLiterature> dataList = StaticUtils.processLiteratureJsonNode(jsonNode);
-        List<List<Integer>> duplicates = StaticUtils.findLiteratureDuplicates(dataList);
+        List<List<Long>> duplicates = StaticUtils.findLiteratureDuplicates(dataList);
         Map<String, Object> reports = StaticUtils.generateLiteratureReport(duplicates);
         return mapper.writeValueAsString(reports);
     }

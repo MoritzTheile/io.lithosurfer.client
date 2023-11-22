@@ -7,7 +7,7 @@ public class DeduplicationArguments extends LithoArguments {
 	public DeduplicationArguments(String[] args) throws Exception {
 
 		super(args);
-
+		// more attributes could be handled here
 	}
 
 }
