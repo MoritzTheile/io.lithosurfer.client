@@ -12,6 +12,7 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestTemplate;
 
+import com.lithodat.api.client.LithoAuth;
 import com.lithodat.api.client.csvimporter.Arguments.IMPORT_TYPE;
 import com.lithodat.api.client.csvimporter.literature.LiteratureDTO;
 import com.lithodat.api.client.csvimporter.literature.LiteratureImporter;
@@ -20,10 +21,10 @@ import com.lithodat.api.client.csvimporter.material.MaterialImporter;
 import com.lithodat.api.client.csvimporter.material.enumeration.MaterialKind;
 
 @SpringBootApplication
-public class CSVImporterApplication {
+public class LithosurferClientApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(CSVImporterApplication.class, args);
+		SpringApplication.run(LithosurferClientApplication.class, args);
 
 	}
 

@@ -1,4 +1,4 @@
-package com.lithodat.api.client.csvimporter;
+package com.lithodat.api.client.deduplication;
 
 // import java.nio.file.Files;
 // import java.nio.file.Paths;
@@ -21,6 +21,8 @@ import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.lithodat.api.client.LithoAuth;
+import com.lithodat.api.client.deduplication.IdentifyProcessor.ProcessedData;
 
 public class Fundings {
 

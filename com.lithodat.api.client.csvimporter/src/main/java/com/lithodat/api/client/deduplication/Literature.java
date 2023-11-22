@@ -1,4 +1,4 @@
-package com.lithodat.api.client.csvimporter;
+package com.lithodat.api.client.deduplication;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,6 +27,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.lithodat.api.client.LithoAuth;
 
 public class Literature {
     private static final int PAGE_SIZE = 1000;

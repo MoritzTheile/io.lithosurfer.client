@@ -1,4 +1,4 @@
-package com.lithodat.api.client.csvimporter;
+package com.lithodat.api.client.deduplication;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
