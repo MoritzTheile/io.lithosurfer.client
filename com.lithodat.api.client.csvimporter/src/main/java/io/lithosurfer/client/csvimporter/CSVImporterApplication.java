@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestTemplate;
 
 import io.lithosurfer.client.LithoAuth;
-import io.lithosurfer.client.csvimporter.Arguments.IMPORT_TYPE;
+import io.lithosurfer.client.csvimporter.CSVImporterArguments.IMPORT_TYPE;
 import io.lithosurfer.client.csvimporter.literature.LiteratureDTO;
 import io.lithosurfer.client.csvimporter.literature.LiteratureImporter;
 import io.lithosurfer.client.csvimporter.material.MaterialDTO;
@@ -43,7 +43,7 @@ public class CSVImporterApplication {
 		return args -> {
 
 			// Wrapping command line arguments in an object.
-			Arguments arguments = new Arguments(args);
+			CSVImporterArguments arguments = new CSVImporterArguments(args);
 
 			// Making source data available.
 			CSVFileReader csvFileReader = new CSVFileReader(arguments.getCsvFile(), ',');

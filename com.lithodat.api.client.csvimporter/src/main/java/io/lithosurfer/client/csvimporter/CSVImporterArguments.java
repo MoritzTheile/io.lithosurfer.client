@@ -2,7 +2,7 @@ package io.lithosurfer.client.csvimporter;
 
 import java.io.File;
 
-public class Arguments {
+public class CSVImporterArguments {
 
 	// an enumeration to keep track of supported imports
 	public static enum IMPORT_TYPE {
@@ -15,7 +15,7 @@ public class Arguments {
 	private final IMPORT_TYPE importType;
 	private final File csvFile;
 
-	public Arguments(String[] args) throws Exception {
+	public CSVImporterArguments(String[] args) throws Exception {
 
 		if (args.length != 5) {
 			throw new Exception("arguments required: CSVImporter <endpoint> <username> <password> <importType> <csvFile>");
