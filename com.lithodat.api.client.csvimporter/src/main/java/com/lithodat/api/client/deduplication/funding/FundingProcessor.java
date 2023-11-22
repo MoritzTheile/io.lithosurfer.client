@@ -1,4 +1,4 @@
-package com.lithodat.api.client.deduplication;
+package com.lithodat.api.client.deduplication.funding;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;

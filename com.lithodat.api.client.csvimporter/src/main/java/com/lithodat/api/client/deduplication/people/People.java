@@ -1,4 +1,4 @@
-package com.lithodat.api.client.deduplication;
+package com.lithodat.api.client.deduplication.people;
 
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -1,4 +1,4 @@
-package com.lithodat.api.client.deduplication;
+package com.lithodat.api.client.deduplication.literature;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,6 +28,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.lithodat.api.client.LithoAuth;
+import com.lithodat.api.client.deduplication.IdentifyProcessor;
+import com.lithodat.api.client.deduplication.IdentifyProcessor.ProcessedLiterature;
 
 public class Literature {
     private static final int PAGE_SIZE = 1000;
