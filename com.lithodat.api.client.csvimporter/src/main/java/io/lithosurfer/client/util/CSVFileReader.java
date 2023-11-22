@@ -1,4 +1,4 @@
-package io.lithosurfer.client.csvimporter;
+package io.lithosurfer.client.util;
 
 import java.io.File;
 import java.util.ArrayList;
