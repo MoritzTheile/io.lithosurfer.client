@@ -9,7 +9,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public class IdentifyProcessor {
+public class DeduplicationApplication {
 
     public static class ProcessedData {
         public String name;
@@ -33,9 +33,9 @@ public class IdentifyProcessor {
         ObjectMapper mapper = new ObjectMapper();
         try {
             JsonNode jsonNode = mapper.readTree(jsonString);
-            List<IdentifyProcessor.ProcessedData> dataList = IdentifyProcessor.processJsonNode(jsonNode);
-            List<List<Integer>> duplicates = IdentifyProcessor.findDuplicates(dataList);
-            Map<String, Object> report = IdentifyProcessor.generateReport(duplicates);
+            List<DeduplicationApplication.ProcessedData> dataList = DeduplicationApplication.processJsonNode(jsonNode);
+            List<List<Integer>> duplicates = DeduplicationApplication.findDuplicates(dataList);
+            Map<String, Object> report = DeduplicationApplication.generateReport(duplicates);
             String reportJson = mapper.writeValueAsString(report);
             System.out.println(reportJson);
         } catch (Exception e) {
@@ -98,9 +98,9 @@ public class IdentifyProcessor {
     public static String generateReportFromJson(String jsonString) throws Exception {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode jsonNode = mapper.readTree(jsonString);
-        List<IdentifyProcessor.ProcessedData> dataList = IdentifyProcessor.processJsonNode(jsonNode);
-        List<List<Integer>> duplicates = IdentifyProcessor.findDuplicates(dataList);
-        Map<String, Object> report = IdentifyProcessor.generateReport(duplicates);
+        List<DeduplicationApplication.ProcessedData> dataList = DeduplicationApplication.processJsonNode(jsonNode);
+        List<List<Integer>> duplicates = DeduplicationApplication.findDuplicates(dataList);
+        Map<String, Object> report = DeduplicationApplication.generateReport(duplicates);
         return mapper.writeValueAsString(report);
     }
 
@@ -217,9 +217,9 @@ public class IdentifyProcessor {
     public static String generateLiteratureReportFromJson(String jsonString) throws Exception {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode jsonNode = mapper.readTree(jsonString);
-        List<IdentifyProcessor.ProcessedLiterature> dataList = IdentifyProcessor.processLiteratureJsonNode(jsonNode);
-        List<List<Integer>> duplicates = IdentifyProcessor.findLiteratureDuplicates(dataList);
-        Map<String, Object> reports = IdentifyProcessor.generateLiteratureReport(duplicates);
+        List<DeduplicationApplication.ProcessedLiterature> dataList = DeduplicationApplication.processLiteratureJsonNode(jsonNode);
+        List<List<Integer>> duplicates = DeduplicationApplication.findLiteratureDuplicates(dataList);
+        Map<String, Object> reports = DeduplicationApplication.generateLiteratureReport(duplicates);
         return mapper.writeValueAsString(reports);
     }
 }

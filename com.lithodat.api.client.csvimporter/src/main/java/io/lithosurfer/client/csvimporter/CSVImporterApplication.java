@@ -21,10 +21,10 @@ import io.lithosurfer.client.csvimporter.material.MaterialImporter;
 import io.lithosurfer.client.csvimporter.material.enumeration.MaterialKind;
 
 @SpringBootApplication
-public class LithosurferClientApplication {
+public class CSVImporterApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(LithosurferClientApplication.class, args);
+		SpringApplication.run(CSVImporterApplication.class, args);
 
 	}
 
