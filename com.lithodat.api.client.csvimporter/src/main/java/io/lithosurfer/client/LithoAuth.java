@@ -1,4 +1,4 @@
-package com.lithodat.api.client;
+package io.lithosurfer.client;
 
 import java.util.Arrays;
 

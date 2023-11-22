@@ -1,4 +1,4 @@
-package com.lithodat.api.client.deduplication;
+package io.lithosurfer.client.deduplication;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

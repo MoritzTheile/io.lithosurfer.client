@@ -1,4 +1,4 @@
-package com.lithodat.api.client.csvimporter;
+package io.lithosurfer.client.csvimporter;
 
 import java.io.File;
 

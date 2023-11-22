@@ -1,4 +1,4 @@
-package com.lithodat.api.client.csvimporter.material.enumeration;
+package io.lithosurfer.client.csvimporter.material.enumeration;
 
 /**
  * The MaterialKind enumeration.

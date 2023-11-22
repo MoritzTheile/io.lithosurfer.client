@@ -1,4 +1,4 @@
-package com.lithodat.api.client.deduplication.funding;
+package io.lithosurfer.client.deduplication.funding;
 
 // import java.nio.file.Files;
 // import java.nio.file.Paths;
@@ -21,9 +21,10 @@ import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.lithodat.api.client.LithoAuth;
-import com.lithodat.api.client.deduplication.IdentifyProcessor;
-import com.lithodat.api.client.deduplication.IdentifyProcessor.ProcessedData;
+
+import io.lithosurfer.client.LithoAuth;
+import io.lithosurfer.client.deduplication.IdentifyProcessor;
+import io.lithosurfer.client.deduplication.IdentifyProcessor.ProcessedData;
 
 public class Fundings {
 

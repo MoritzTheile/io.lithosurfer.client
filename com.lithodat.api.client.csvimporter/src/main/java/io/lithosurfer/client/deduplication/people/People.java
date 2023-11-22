@@ -1,4 +1,4 @@
-package com.lithodat.api.client.deduplication.people;
+package io.lithosurfer.client.deduplication.people;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,7 +16,8 @@ import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.lithodat.api.client.LithoAuth;
+
+import io.lithosurfer.client.LithoAuth;
 
 public class People {
     private static final int PAGE_SIZE = 1000;
