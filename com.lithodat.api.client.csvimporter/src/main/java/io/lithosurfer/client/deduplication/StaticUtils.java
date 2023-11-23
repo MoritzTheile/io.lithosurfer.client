@@ -1,13 +1,18 @@
 package io.lithosurfer.client.deduplication;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class StaticUtils {
 
@@ -201,7 +206,7 @@ public class StaticUtils {
         return result;
     }
 
-    public static Map<String, Object> generateLiteratureReport(List<List<Long>> duplicates) {
+    public static Map<String, Object> generateDuplicateReport(Collection<List<Long>> duplicates) {
         int totalSets = duplicates.size();
         int biggestSize = duplicates.stream().mapToInt(List::size).max().orElse(0);
         int totalIds = duplicates.stream().mapToInt(List::size).sum();
@@ -219,7 +224,17 @@ public class StaticUtils {
         JsonNode jsonNode = mapper.readTree(jsonString);
         List<StaticUtils.ProcessedLiterature> dataList = StaticUtils.processLiteratureJsonNode(jsonNode);
         List<List<Long>> duplicates = StaticUtils.findLiteratureDuplicates(dataList);
-        Map<String, Object> reports = StaticUtils.generateLiteratureReport(duplicates);
+        Map<String, Object> reports = StaticUtils.generateDuplicateReport(duplicates);
         return mapper.writeValueAsString(reports);
     }
+
+    public static void writeObjectToFile(Object object, String filename) throws IOException {
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+			String reportJson = mapper.writeValueAsString(object);
+			Files.write(Paths.get(filename), reportJson.getBytes());
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
+	}
 }

@@ -1,10 +1,14 @@
 package io.lithosurfer.client.deduplication;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -19,6 +23,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.lithosurfer.client.LithoAuth;
 import io.lithosurfer.client.deduplication.literature.LiteratureHelper;
+import io.lithosurfer.client.deduplication.people.PeopleHelper;
+import io.lithosurfer.client.deduplication.people.PersonDTO;
 
 @SpringBootApplication
 public class DeduplicationApplication {
@@ -51,7 +57,7 @@ public class DeduplicationApplication {
 				String authenticationKey = lithoAuth.authenticateAndGetJWT();
 
 				// mergeLiterature(lithoAuth, authenticationKey);
-
+				mergePeople(lithoAuth, authenticationKey);
 			} catch (Exception e) {
 				e.printStackTrace();
 			} finally {// Brute force shutdown is used to make things not more complicated than
@@ -64,11 +70,11 @@ public class DeduplicationApplication {
 	}
 
 	private void mergeLiterature(LithoAuth lithoAuth, String authenticationKey) throws Exception, IOException {
-		LiteratureHelper literature = new LiteratureHelper(lithoAuth.endpoint);
-		JsonNode literatureJsonNode = literature.getAllLiterature(authenticationKey);
+		LiteratureHelper helper = new LiteratureHelper(lithoAuth.endpoint);
+		JsonNode literatureJsonNode = helper.getAllLiterature(authenticationKey);
 		List<StaticUtils.ProcessedLiterature> dataList = StaticUtils.processLiteratureJsonNode(literatureJsonNode);
 		List<List<Long>> duplicates = StaticUtils.findLiteratureDuplicates(dataList);
-		Map<String, Object> report = StaticUtils.generateLiteratureReport(duplicates);
+		Map<String, Object> report = StaticUtils.generateDuplicateReport(duplicates);
 		ObjectMapper mapper = new ObjectMapper();
 		try {
 			String reportJson = mapper.writeValueAsString(report);
@@ -77,10 +83,11 @@ public class DeduplicationApplication {
 			e.printStackTrace();
 		}
 		{ // merging
-//						System.out.println("literature count before merging: " + literature.getAllLiterature(authenticationKey).size());
-//						literature.mergeDuplicates(authenticationKey, duplicates);
-//						System.out.println("literature count after merging: " + literature.getAllLiterature(authenticationKey).size());
+			System.out.println("literature count before merging: " + helper.getAllLiterature(authenticationKey).size());
+			helper.mergeDuplicates(authenticationKey, duplicates);
+			System.out.println("literature count after merging: " + helper.getAllLiterature(authenticationKey).size());
 		}
 	}
+
 
 }
