@@ -1,8 +1,5 @@
 package io.lithosurfer.client.deduplication._outdated;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -10,11 +7,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class StaticUtils {
+public class RandomUtils {
 
     public static class ProcessedData {
         public String name;
@@ -38,9 +34,9 @@ public class StaticUtils {
         ObjectMapper mapper = new ObjectMapper();
         try {
             JsonNode jsonNode = mapper.readTree(jsonString);
-            List<StaticUtils.ProcessedData> dataList = StaticUtils.processJsonNode(jsonNode);
-            List<List<Integer>> duplicates = StaticUtils.findDuplicates(dataList);
-            Map<String, Object> report = StaticUtils.generateReport(duplicates);
+            List<RandomUtils.ProcessedData> dataList = RandomUtils.processJsonNode(jsonNode);
+            List<List<Integer>> duplicates = RandomUtils.findDuplicates(dataList);
+            Map<String, Object> report = RandomUtils.generateReport(duplicates);
             String reportJson = mapper.writeValueAsString(report);
             System.out.println(reportJson);
         } catch (Exception e) {
@@ -103,9 +99,9 @@ public class StaticUtils {
     public static String generateReportFromJson(String jsonString) throws Exception {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode jsonNode = mapper.readTree(jsonString);
-        List<StaticUtils.ProcessedData> dataList = StaticUtils.processJsonNode(jsonNode);
-        List<List<Integer>> duplicates = StaticUtils.findDuplicates(dataList);
-        Map<String, Object> report = StaticUtils.generateReport(duplicates);
+        List<RandomUtils.ProcessedData> dataList = RandomUtils.processJsonNode(jsonNode);
+        List<List<Integer>> duplicates = RandomUtils.findDuplicates(dataList);
+        Map<String, Object> report = RandomUtils.generateReport(duplicates);
         return mapper.writeValueAsString(report);
     }
 
@@ -222,19 +218,10 @@ public class StaticUtils {
     public static String generateLiteratureReportFromJson(String jsonString) throws Exception {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode jsonNode = mapper.readTree(jsonString);
-        List<StaticUtils.ProcessedLiterature> dataList = StaticUtils.processLiteratureJsonNode(jsonNode);
-        List<List<Long>> duplicates = StaticUtils.findLiteratureDuplicates(dataList);
-        Map<String, Object> reports = StaticUtils.generateDuplicateReport(duplicates);
+        List<RandomUtils.ProcessedLiterature> dataList = RandomUtils.processLiteratureJsonNode(jsonNode);
+        List<List<Long>> duplicates = RandomUtils.findLiteratureDuplicates(dataList);
+        Map<String, Object> reports = RandomUtils.generateDuplicateReport(duplicates);
         return mapper.writeValueAsString(reports);
     }
 
-    public static void writeObjectToFile(Object object, String filename) throws IOException {
-		ObjectMapper mapper = new ObjectMapper();
-		try {
-			String reportJson = mapper.writeValueAsString(object);
-			Files.write(Paths.get(filename), reportJson.getBytes());
-		} catch (JsonProcessingException e) {
-			e.printStackTrace();
-		}
-	}
 }

@@ -23,7 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import io.lithosurfer.client.LithoAuth;
-import io.lithosurfer.client.deduplication._outdated.StaticUtils.ProcessedData;
+import io.lithosurfer.client.deduplication._outdated.RandomUtils.ProcessedData;
 
 public class Fundings {
 
@@ -235,8 +235,8 @@ public class Fundings {
 				// fundings.putAllFundings(authenticationKey, fundingsJsonNode);
 
 				// Identify duplicates
-				List<StaticUtils.ProcessedData> dataList = StaticUtils.processJsonNode(fundingsJsonNode);
-				List<List<Integer>> duplicates = StaticUtils.findDuplicates(dataList);
+				List<RandomUtils.ProcessedData> dataList = RandomUtils.processJsonNode(fundingsJsonNode);
+				List<List<Integer>> duplicates = RandomUtils.findDuplicates(dataList);
 				// Map<String, Object> report = IdentifyProcessor.generateReport(duplicates);
 				// ObjectMapper mapper = new ObjectMapper();
 				// try {
