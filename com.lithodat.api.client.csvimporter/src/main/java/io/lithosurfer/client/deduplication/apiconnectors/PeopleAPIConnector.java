@@ -16,7 +16,12 @@ public class PeopleAPIConnector extends AbstractAPIConnector<PersonDTO> {
 
 	protected String getFingerprint(PersonDTO entityDTO) {
 
-		return entityDTO.getTitle() + "_" + entityDTO.getFirstName() + "_" + entityDTO.getName() + "_" + entityDTO.getOrcId();
+		return entityDTO.getTitle() + "|" + entityDTO.getFirstName() + "|" + entityDTO.getName() + "|" + entityDTO.getOrcId();
 
+	}
+
+	@Override
+	protected String getServicePath() {
+		return "/api/core/people";
 	}
 }

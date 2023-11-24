@@ -12,13 +12,18 @@ public class FundingAPIConnector extends AbstractAPIConnector<FundingDTO> {
 
 	protected String getFingerprint(FundingDTO entityDTO) {
 
-		return entityDTO.getFundingBodyName() + "_" + entityDTO.getName() + "_" + entityDTO.getName() + "_" + entityDTO.getYear();
+		return entityDTO.getFundingBodyName() + "|" + entityDTO.getName() + "|" + entityDTO.getName() + "|" + entityDTO.getYear();
 
 	}
 
 	@Override
 	protected Class<FundingDTO[]> getServiceReturnClass() {
 		return FundingDTO[].class;
+	}
+
+	@Override
+	protected String getServicePath() {
+		return "/api/core/fundings";
 	}
 
 

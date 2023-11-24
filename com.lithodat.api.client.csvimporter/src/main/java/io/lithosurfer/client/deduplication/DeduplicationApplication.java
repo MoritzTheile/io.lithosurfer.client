@@ -44,15 +44,15 @@ public class DeduplicationApplication {
 
 				{// merging Funding
 					FundingAPIConnector apiConnector = new FundingAPIConnector(lithoAuth.endpoint);
-					apiConnector.findDuplicatesAndMerge(authenticationKey);
+					apiConnector.findDuplicatesAndReport(authenticationKey);
 				}
 				{// merging Literature
 					LiteratureAPIConnector apiConnector = new LiteratureAPIConnector(lithoAuth.endpoint);
-					apiConnector.findDuplicatesAndMerge(authenticationKey);
+					apiConnector.findDuplicatesAndReport(authenticationKey);
 				}
 				{ // merging People
 					PeopleAPIConnector apiConnector = new PeopleAPIConnector(lithoAuth.endpoint);
-					apiConnector.findDuplicatesAndMerge(authenticationKey);
+					apiConnector.findDuplicatesAndReport(authenticationKey);
 				}
 
 			} catch (Exception e) {

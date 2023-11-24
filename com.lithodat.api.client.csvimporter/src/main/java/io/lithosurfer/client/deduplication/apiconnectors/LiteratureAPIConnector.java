@@ -12,27 +12,32 @@ public class LiteratureAPIConnector extends AbstractAPIConnector<LiteratureDTO> 
 
 	protected String getFingerprint(LiteratureDTO entityDTO) {
 		
-		return entityDTO.getAuthor() + "_" + //
-				entityDTO.getTitle() + "_" + //
-				entityDTO.getYear() + "_" + //
-				entityDTO.getMonth() + "_" + //
-				entityDTO.getType() + "_" + //
-				entityDTO.getVolume() + "_" + //
-				entityDTO.getPublisher() + "_" + //
-				entityDTO.getPages() + "_" + //
-				entityDTO.getTitle() + "_" + //
-				entityDTO.getChapter() + "_" + //
-				entityDTO.getDoi() + "_" + //
-				entityDTO.getOtherId() + "_" + //
-				entityDTO.getJournal() + "_" + //
-				entityDTO.getSchool() + "_" + //
-				entityDTO.getInstitution() + "_"; //
+		return entityDTO.getAuthor() + "|" + //
+				entityDTO.getTitle() + "|" + //
+				entityDTO.getPubYear() + "|" + //
+				entityDTO.getPubMonth() + "|" + //
+				entityDTO.getLitType() + "|" + //
+				entityDTO.getVolume() + "|" + //
+				entityDTO.getPublisher() + "|" + //
+				entityDTO.getPages() + "|" + //
+				entityDTO.getTitle() + "|" + //
+				entityDTO.getChapter() + "|" + //
+				entityDTO.getDoi() + "|" + //
+				entityDTO.getOtherId() + "|" + //
+				entityDTO.getJournal() + "|" + //
+				entityDTO.getSchool() + "|" + //
+				entityDTO.getInstitution() + "|"; //
 
 	}
 
 	@Override
 	protected Class<LiteratureDTO[]> getServiceReturnClass() {
 		return LiteratureDTO[].class;
+	}
+
+	@Override
+	protected String getServicePath() {
+		return "/api/core/literature";
 	}
 
 

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -26,10 +27,12 @@ public abstract class AbstractAPIConnector<T extends Identifyable> {
 
 	public AbstractAPIConnector(String endpoint) {
 
-		this.entityUrl = endpoint + "/api/core/literature";
+		this.entityUrl = endpoint + getServicePath();
 		this.mergeUrl = entityUrl + "/merge";
 
 	}
+
+	protected abstract String getServicePath();
 
 	public List<T> getAll(String token) throws Exception {
 
@@ -46,12 +49,15 @@ public abstract class AbstractAPIConnector<T extends Identifyable> {
 		List<T> page = null;
 
 		while (page == null || page.size() == PAGE_SIZE) {
+			
+			System.out.println("calling "+ entityUrl);
 
 			ResponseEntity<T[]> result = new RestTemplate().exchange(
 
 					entityUrl + "?page=" + pageNumber + "&size=" + PAGE_SIZE, HttpMethod.GET, 
 					new HttpEntity<T[]>(headers), 
 					getServiceReturnClass());
+			
 			page = Arrays.asList(result.getBody());
 			entities.addAll(page);
 			pageNumber++;
@@ -63,19 +69,48 @@ public abstract class AbstractAPIConnector<T extends Identifyable> {
 	}
 
 	public void findDuplicatesAndMerge(String authenticationKey) throws Exception, IOException {
+		System.out.println("-------------------------------------\nstarting findDuplicatesAndMerge for "+ getSimplifiedClassName()+" ...");
 
+		Map<Long, List<Long>> duplicateSets = findDuplicates(authenticationKey);
+
+		System.out.println(getSimplifiedClassName()+" count before merging: " + getAll(authenticationKey).size());
+		mergeDuplicates(authenticationKey, duplicateSets);
+		System.out.println(getSimplifiedClassName()+" count after merging: " + getAll(authenticationKey).size());
+
+		System.out.println("... finished findDuplicatesAndMerge for "+ getSimplifiedClassName()+" ...\n-------------------------------------");
+	}
+	
+	public void findDuplicatesAndReport(String authenticationKey) throws Exception, IOException {
+		System.out.println("-------------------------------------\nstarting findDuplicatesAndReport for "+ getSimplifiedClassName()+" ...");
+		
+		Map<Long, List<Long>> duplicateSets = findDuplicates(authenticationKey);
+
+		int totalSets = duplicateSets.values().size();
+        int biggestSize = duplicateSets.values().stream().mapToInt(List::size).max().orElse(0);
+        int totalIds = duplicateSets.values().stream().mapToInt(List::size).sum();
+
+        System.out.println("total_sets: "+ totalSets);
+        System.out.println("total_ids: " + totalIds);
+        System.out.println("biggest_size: " +  biggestSize);
+		
+		String filename = "duplicateSets."+getSimplifiedClassName()+".json";
+		StaticUtils.writeObjectToFile(duplicateSets, filename);
+		System.out.println("For all duplicates see file " + filename);
+
+		System.out.println("... finished findDuplicatesAndReport for "+ getSimplifiedClassName()+" ...\n-------------------------------------");
+	}
+
+	private String getSimplifiedClassName() {
+		return getServiceReturnClass().getSimpleName().replaceAll("[\\[\\]]","");
+	}
+
+	private Map<Long, List<Long>> findDuplicates(String authenticationKey) throws Exception {
 		List<T> allLiterature = getAll(authenticationKey);
 
 		Map<String, List<T>> findSurvivorWithDuplicates = findSurvivorWithDuplicates(allLiterature);
 
 		Map<Long, List<Long>> duplicateSets = translateToIdMap(findSurvivorWithDuplicates);
-
-		StaticUtils.writeObjectToFile(duplicateSets, "duplicateSets.Literature.json");
-
-		System.out.println("Literature count before merging: " + getAll(authenticationKey).size());
-		mergeDuplicates(authenticationKey, duplicateSets);
-		System.out.println("Literature count after merging: " + getAll(authenticationKey).size());
-
+		return duplicateSets;
 	}
 
 	private void mergeDuplicates(String token, Map<Long, List<Long>> survivorWithDuplicates) {
@@ -96,7 +131,6 @@ public abstract class AbstractAPIConnector<T extends Identifyable> {
 			HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
 
 			try {
-
 				ResponseEntity<String> response = new RestTemplate().postForEntity(mergeUrl, entity, String.class);
 
 				if (!HttpStatus.OK.equals(response.getStatusCode())) {
@@ -112,11 +146,11 @@ public abstract class AbstractAPIConnector<T extends Identifyable> {
 
 	}
 
-	private  Map<String, List<T>> findSurvivorWithDuplicates(List<T> allLiterature) {
+	private  Map<String, List<T>> findSurvivorWithDuplicates(List<T> allEntities) {
 
 		Map<String, List<T>> fingerprint2duplicates = new HashMap<>();
 
-		for (T entityDTO : allLiterature) {
+		for (T entityDTO : allEntities) {
 
 			String fingerprint = getFingerprint(entityDTO);
 
