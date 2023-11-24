@@ -133,7 +133,7 @@ public abstract class AbstractAPIConnector<T extends Identifyable> {
 			try {
 				ResponseEntity<String> response = new RestTemplate().postForEntity(mergeUrl, entity, String.class);
 
-				if (!HttpStatus.OK.equals(response.getStatusCode())) {
+				if (!response.getStatusCode().is2xxSuccessful()) {
 					System.out.println("Failed to merge for survivor ID: " + survivorId);
 					System.out.println("Response: " + response.getBody());
 				}

@@ -1,5 +1,7 @@
 package io.lithosurfer.client.deduplication;
 
+import java.io.IOException;
+
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -8,6 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestTemplate;
 
 import io.lithosurfer.client.LithoAuth;
+import io.lithosurfer.client.deduplication.DeduplicationArguments.MODE;
 import io.lithosurfer.client.deduplication.apiconnectors.FundingAPIConnector;
 import io.lithosurfer.client.deduplication.apiconnectors.LiteratureAPIConnector;
 import io.lithosurfer.client.deduplication.apiconnectors.PeopleAPIConnector;
@@ -42,18 +45,12 @@ public class DeduplicationApplication {
 				LithoAuth lithoAuth = new LithoAuth(arguments.getEndpoint(), arguments.getUsername(), arguments.getPassword());
 				String authenticationKey = lithoAuth.authenticateAndGetJWT();
 
-				{// merging Funding
-					FundingAPIConnector apiConnector = new FundingAPIConnector(lithoAuth.endpoint);
-					apiConnector.findDuplicatesAndReport(authenticationKey);
+				if (MODE.report.equals(arguments.getMode())) {
+					report(lithoAuth, authenticationKey);
+				}else if(MODE.merge.equals(arguments.getMode())) {
+					merge(lithoAuth, authenticationKey);
 				}
-				{// merging Literature
-					LiteratureAPIConnector apiConnector = new LiteratureAPIConnector(lithoAuth.endpoint);
-					apiConnector.findDuplicatesAndReport(authenticationKey);
-				}
-				{ // merging People
-					PeopleAPIConnector apiConnector = new PeopleAPIConnector(lithoAuth.endpoint);
-					apiConnector.findDuplicatesAndReport(authenticationKey);
-				}
+
 
 			} catch (Exception e) {
 
@@ -65,6 +62,36 @@ public class DeduplicationApplication {
 			}
 
 		};
+	}
+
+	private void report(LithoAuth lithoAuth, String authenticationKey) throws Exception, IOException {
+		{// reporting Funding
+			FundingAPIConnector apiConnector = new FundingAPIConnector(lithoAuth.endpoint);
+			apiConnector.findDuplicatesAndReport(authenticationKey);
+		}
+		{// reporting Literature
+			LiteratureAPIConnector apiConnector = new LiteratureAPIConnector(lithoAuth.endpoint);
+			apiConnector.findDuplicatesAndReport(authenticationKey);
+		}
+		{ // reporting People
+			PeopleAPIConnector apiConnector = new PeopleAPIConnector(lithoAuth.endpoint);
+			apiConnector.findDuplicatesAndReport(authenticationKey);
+		}
+	}
+
+	private void merge(LithoAuth lithoAuth, String authenticationKey) throws Exception, IOException {
+		{// merging Funding
+			FundingAPIConnector apiConnector = new FundingAPIConnector(lithoAuth.endpoint);
+			apiConnector.findDuplicatesAndMerge(authenticationKey);
+		}
+		{// merging Literature
+			LiteratureAPIConnector apiConnector = new LiteratureAPIConnector(lithoAuth.endpoint);
+			apiConnector.findDuplicatesAndMerge(authenticationKey);
+		}
+		{ // merging People
+			PeopleAPIConnector apiConnector = new PeopleAPIConnector(lithoAuth.endpoint);
+			apiConnector.findDuplicatesAndMerge(authenticationKey);
+		}
 	}
 
 	
