@@ -11,7 +11,6 @@ import java.util.TreeMap;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
@@ -312,13 +311,8 @@ public class Literature {
 				HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
 
 				try {
-					ResponseEntity<String> response = new RestTemplate().postForEntity(mergeUrl, entity, String.class);
+					new RestTemplate().postForEntity(mergeUrl, entity, String.class);
 
-					// ATTENTION: this seems to be non OK even if merge was successful
-//					 if (response.getStatusCode() != HttpStatus.OK) {
-//					 	System.out.println("Failed to merge for survivor ID: " + survivorId);
-//					 	System.out.println("Response: " + response.getBody());
-//					 }
 				} catch (Exception e) {
 					 e.printStackTrace();
 				}

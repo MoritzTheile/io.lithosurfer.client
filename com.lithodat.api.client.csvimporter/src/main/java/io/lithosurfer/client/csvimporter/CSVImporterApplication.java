@@ -152,9 +152,9 @@ public class CSVImporterApplication {
 
 					counter++;
 
-					//					if (counter % 250 == 0) {
-					//						System.out.println("filtered " + counter);
-					//					}
+										if (counter % 250 == 0) {
+//											System.out.println("filtered " + counter);
+										}
 
 					MaterialDTO dto = mapRowToMaterialDTO(rowAsMap);
 

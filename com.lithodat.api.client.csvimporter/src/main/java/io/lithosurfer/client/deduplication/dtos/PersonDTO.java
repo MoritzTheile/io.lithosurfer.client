@@ -5,7 +5,9 @@ import java.util.Objects;
 
 public class PersonDTO implements Serializable, Identifyable{
 
-    private Long id;
+	private static final long serialVersionUID = -2655500648958649153L;
+
+	private Long id;
 
     private String name;
 

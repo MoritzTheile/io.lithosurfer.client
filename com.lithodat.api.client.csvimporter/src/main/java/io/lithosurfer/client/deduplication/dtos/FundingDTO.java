@@ -8,7 +8,9 @@ import java.util.Objects;
  */
 public class FundingDTO implements Serializable, Identifyable{
 
-    private Long id;
+	private static final long serialVersionUID = 5918792123895238939L;
+
+	private Long id;
 
     private String name;
 

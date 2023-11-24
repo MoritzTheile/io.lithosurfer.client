@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 public class LiteratureDTO implements Serializable, Identifyable {
 
+	private static final long serialVersionUID = 7891192903175708976L;
+
 	private Long id;
 
 	private String author;

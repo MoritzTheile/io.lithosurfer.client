@@ -16,7 +16,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
-import io.lithosurfer.client.deduplication._outdated.RandomUtils;
 import io.lithosurfer.client.deduplication.dtos.Identifyable;
 import io.lithosurfer.client.util.StaticUtils;
 

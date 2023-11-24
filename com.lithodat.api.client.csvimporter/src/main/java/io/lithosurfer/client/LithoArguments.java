@@ -1,7 +1,5 @@
 package io.lithosurfer.client;
 
-import javax.management.RuntimeErrorException;
-
 public class LithoArguments {
 
 	protected final String endpoint;

@@ -23,7 +23,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import io.lithosurfer.client.LithoAuth;
-import io.lithosurfer.client.deduplication._outdated.RandomUtils.ProcessedData;
 
 public class Fundings {
 
@@ -189,16 +188,9 @@ public class Fundings {
 				HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
 
 				try {
-					ResponseEntity<String> response = new RestTemplate().postForEntity(mergeUrl, entity, String.class);
-					// System.out.println("Merging for survivor ID: " + survivorId);
-
-					// if (response.getStatusCode() != HttpStatus.OK) {
-					// 	System.out.println("Failed to merge for survivor ID: " + survivorId);
-					// 	System.out.println("Response: " + response.getBody());
-					// }
+					new RestTemplate().postForEntity(mergeUrl, entity, String.class);
 				} catch (Exception e) {
-					// System.out.println("Error merging for survivor ID: " + survivorId);
-					// e.printStackTrace();
+					e.printStackTrace();
 				}
 			}
 		}
