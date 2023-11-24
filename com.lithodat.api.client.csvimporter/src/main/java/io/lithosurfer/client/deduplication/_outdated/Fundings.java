@@ -1,4 +1,4 @@
-package io.lithosurfer.client.deduplication.funding;
+package io.lithosurfer.client.deduplication._outdated;
 
 // import java.nio.file.Files;
 // import java.nio.file.Paths;
@@ -23,8 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import io.lithosurfer.client.LithoAuth;
-import io.lithosurfer.client.deduplication.StaticUtils;
-import io.lithosurfer.client.deduplication.StaticUtils.ProcessedData;
+import io.lithosurfer.client.deduplication._outdated.StaticUtils.ProcessedData;
 
 public class Fundings {
 

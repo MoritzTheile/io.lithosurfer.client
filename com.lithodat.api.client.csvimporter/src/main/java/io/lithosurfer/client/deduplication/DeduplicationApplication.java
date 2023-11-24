@@ -1,14 +1,10 @@
 package io.lithosurfer.client.deduplication;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -22,9 +18,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.lithosurfer.client.LithoAuth;
-import io.lithosurfer.client.deduplication.literature.LiteratureHelper;
-import io.lithosurfer.client.deduplication.people.PeopleHelper;
-import io.lithosurfer.client.deduplication.people.PersonDTO;
+import io.lithosurfer.client.deduplication._outdated.Literature;
+import io.lithosurfer.client.deduplication._outdated.StaticUtils;
+import io.lithosurfer.client.deduplication.apiconnectors.FundingAPIConnector;
+import io.lithosurfer.client.deduplication.apiconnectors.LiteratureAPIConnector;
+import io.lithosurfer.client.deduplication.apiconnectors.PeopleAPIConnector;
 
 @SpringBootApplication
 public class DeduplicationApplication {
@@ -56,10 +54,23 @@ public class DeduplicationApplication {
 				LithoAuth lithoAuth = new LithoAuth(arguments.getEndpoint(), arguments.getUsername(), arguments.getPassword());
 				String authenticationKey = lithoAuth.authenticateAndGetJWT();
 
-				// mergeLiterature(lithoAuth, authenticationKey);
-				mergePeople(lithoAuth, authenticationKey);
+				{// merging Funding
+					FundingAPIConnector apiConnector = new FundingAPIConnector(lithoAuth.endpoint);
+					apiConnector.findDuplicatesAndMerge(authenticationKey);
+				}
+				{// merging Literature
+					LiteratureAPIConnector apiConnector = new LiteratureAPIConnector(lithoAuth.endpoint);
+					apiConnector.findDuplicatesAndMerge(authenticationKey);
+				}
+				{ // merging People
+					PeopleAPIConnector apiConnector = new PeopleAPIConnector(lithoAuth.endpoint);
+					apiConnector.findDuplicatesAndMerge(authenticationKey);
+				}
+
 			} catch (Exception e) {
+
 				e.printStackTrace();
+
 			} finally {// Brute force shutdown is used to make things not more complicated than
 						// necessary...
 				System.out.println("shutting down with System.exit(0)");
@@ -70,7 +81,7 @@ public class DeduplicationApplication {
 	}
 
 	private void mergeLiterature(LithoAuth lithoAuth, String authenticationKey) throws Exception, IOException {
-		LiteratureHelper helper = new LiteratureHelper(lithoAuth.endpoint);
+		Literature helper = new Literature(lithoAuth.endpoint);
 		JsonNode literatureJsonNode = helper.getAllLiterature(authenticationKey);
 		List<StaticUtils.ProcessedLiterature> dataList = StaticUtils.processLiteratureJsonNode(literatureJsonNode);
 		List<List<Long>> duplicates = StaticUtils.findLiteratureDuplicates(dataList);
@@ -88,6 +99,5 @@ public class DeduplicationApplication {
 			System.out.println("literature count after merging: " + helper.getAllLiterature(authenticationKey).size());
 		}
 	}
-
 
 }

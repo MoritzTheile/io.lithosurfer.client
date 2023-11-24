@@ -1,4 +1,4 @@
-package io.lithosurfer.client.deduplication.literature;
+package io.lithosurfer.client.deduplication._outdated;
 
 import java.io.File;
 import java.util.Arrays;
@@ -23,12 +23,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-public class LiteratureHelper {
+public class Literature {
     private static final int PAGE_SIZE = 1000;
     private final String literatureUrl;
     private final String mergeUrl;
 
-    public LiteratureHelper(String endpoint) {
+    public Literature(String endpoint) {
 
         this.literatureUrl = endpoint + "/api/core/literature";
         this.mergeUrl = endpoint + "/api/core/literature/merge";

@@ -1,23 +1,22 @@
-package io.lithosurfer.client.deduplication.people;
+package io.lithosurfer.client.deduplication.dtos;
 import java.time.Instant;
 import java.io.Serializable;
 import java.util.Objects;
 
-public class PersonDTO implements Serializable{
+/**
+ * A DTO for the {@link com.lithodat.app.domain.Funding} entity.
+ */
+public class FundingDTO implements Serializable, Identifyable{
 
     private Long id;
 
     private String name;
 
-    private String firstName;
+    private String description;
 
-    private String calcName;
+    private String grandNumber;
 
-    private String title;
-
-    private String note;
-
-    private String orcId;
+    private Integer year;
 
     private Instant createdTimestamp;
 
@@ -31,6 +30,10 @@ public class PersonDTO implements Serializable{
     private Long lastEditedById;
 
     private Long deletedById;
+
+    private Long fundingBodyId;
+
+    private String fundingBodyName;
 
     public Long getId() {
         return id;
@@ -48,44 +51,28 @@ public class PersonDTO implements Serializable{
         this.name = name;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public String getDescription() {
+        return description;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
-    public String getCalcName() {
-        return calcName;
+    public String getGrandNumber() {
+        return grandNumber;
     }
 
-    public void setCalcName(String calcName) {
-        this.calcName = calcName;
+    public void setGrandNumber(String grandNumber) {
+        this.grandNumber = grandNumber;
     }
 
-    public String getTitle() {
-        return title;
+    public Integer getYear() {
+        return year;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getNote() {
-        return note;
-    }
-
-    public void setNote(String note) {
-        this.note = note;
-    }
-
-    public String getOrcId() {
-        return orcId;
-    }
-
-    public void setOrcId(String orcId) {
-        this.orcId = orcId;
+    public void setYear(Integer year) {
+        this.year = year;
     }
 
     public Instant getCreatedTimestamp() {
@@ -136,6 +123,22 @@ public class PersonDTO implements Serializable{
         this.deletedById = lithoUserId;
     }
 
+    public Long getFundingBodyId() {
+        return fundingBodyId;
+    }
+
+    public void setFundingBodyId(Long fundingBodyId) {
+        this.fundingBodyId = fundingBodyId;
+    }
+
+    public String getFundingBodyName() {
+        return fundingBodyName;
+    }
+
+    public void setFundingBodyName(String fundingBodyName) {
+        this.fundingBodyName = fundingBodyName;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -145,11 +148,11 @@ public class PersonDTO implements Serializable{
             return false;
         }
 
-        PersonDTO personDTO = (PersonDTO) o;
-        if (personDTO.getId() == null || getId() == null) {
+        FundingDTO fundingDTO = (FundingDTO) o;
+        if (fundingDTO.getId() == null || getId() == null) {
             return false;
         }
-        return Objects.equals(getId(), personDTO.getId());
+        return Objects.equals(getId(), fundingDTO.getId());
     }
 
     @Override
@@ -159,20 +162,20 @@ public class PersonDTO implements Serializable{
 
     @Override
     public String toString() {
-        return "PersonDTO{" +
+        return "FundingDTO{" +
             "id=" + getId() +
             ", name='" + getName() + "'" +
-            ", firstName='" + getFirstName() + "'" +
-            ", calcName='" + getCalcName() + "'" +
-            ", title='" + getTitle() + "'" +
-            ", note='" + getNote() + "'" +
-            ", orcId='" + getOrcId() + "'" +
+            ", description='" + getDescription() + "'" +
+            ", grandNumber='" + getGrandNumber() + "'" +
+            ", year=" + getYear() +
             ", createdTimestamp='" + getCreatedTimestamp() + "'" +
             ", lastEditedTimestamp='" + getLastEditedTimestamp() + "'" +
             ", deletedTimestamp='" + getDeletedTimestamp() + "'" +
             ", createdBy=" + getCreatedById() +
             ", lastEditedBy=" + getLastEditedById() +
             ", deletedBy=" + getDeletedById() +
+            ", fundingBody=" + getFundingBodyId() +
+            ", fundingBody='" + getFundingBodyName() + "'" +
             "}";
     }
 }
