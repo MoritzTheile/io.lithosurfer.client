@@ -1,4 +1,4 @@
-package com.lithodat.api.client.csvimporter;
+package io.lithosurfer.client.csvimporter;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -12,12 +12,14 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestTemplate;
 
-import com.lithodat.api.client.csvimporter.Arguments.IMPORT_TYPE;
-import com.lithodat.api.client.csvimporter.literature.LiteratureDTO;
-import com.lithodat.api.client.csvimporter.literature.LiteratureImporter;
-import com.lithodat.api.client.csvimporter.material.MaterialDTO;
-import com.lithodat.api.client.csvimporter.material.MaterialImporter;
-import com.lithodat.api.client.csvimporter.material.enumeration.MaterialKind;
+import io.lithosurfer.client.LithoAuth;
+import io.lithosurfer.client.csvimporter.CSVImporterArguments.IMPORT_TYPE;
+import io.lithosurfer.client.csvimporter.literature.LiteratureDTO;
+import io.lithosurfer.client.csvimporter.literature.LiteratureImporter;
+import io.lithosurfer.client.csvimporter.material.MaterialDTO;
+import io.lithosurfer.client.csvimporter.material.MaterialImporter;
+import io.lithosurfer.client.csvimporter.material.enumeration.MaterialKind;
+import io.lithosurfer.client.util.CSVFileReader;
 
 @SpringBootApplication
 public class CSVImporterApplication {
@@ -41,7 +43,7 @@ public class CSVImporterApplication {
 		return args -> {
 
 			// Wrapping command line arguments in an object.
-			Arguments arguments = new Arguments(args);
+			CSVImporterArguments arguments = new CSVImporterArguments(args);
 
 			// Making source data available.
 			CSVFileReader csvFileReader = new CSVFileReader(arguments.getCsvFile(), ',');
@@ -150,9 +152,9 @@ public class CSVImporterApplication {
 
 					counter++;
 
-					//					if (counter % 250 == 0) {
-					//						System.out.println("filtered " + counter);
-					//					}
+										if (counter % 250 == 0) {
+//											System.out.println("filtered " + counter);
+										}
 
 					MaterialDTO dto = mapRowToMaterialDTO(rowAsMap);
 

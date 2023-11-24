@@ -1,9 +1,9 @@
-package com.lithodat.api.client.csvimporter.material;
+package io.lithosurfer.client.csvimporter.material;
 
 import java.io.Serializable;
 import java.util.Objects;
 
-import com.lithodat.api.client.csvimporter.material.enumeration.MaterialKind;
+import io.lithosurfer.client.csvimporter.material.enumeration.MaterialKind;
 
 /**
  * A DTO for the {@link com.lithodat.app.domain.Material} entity.

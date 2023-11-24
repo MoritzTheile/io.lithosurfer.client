@@ -1,4 +1,4 @@
-package com.lithodat.api.client.csvimporter.literature;
+package io.lithosurfer.client.csvimporter.literature;
 
 public class LiteratureDTO {
 

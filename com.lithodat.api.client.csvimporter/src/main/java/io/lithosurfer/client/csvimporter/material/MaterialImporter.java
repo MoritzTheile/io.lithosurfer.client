@@ -1,4 +1,4 @@
-package com.lithodat.api.client.csvimporter.material;
+package io.lithosurfer.client.csvimporter.material;
 
 import java.util.Arrays;
 
