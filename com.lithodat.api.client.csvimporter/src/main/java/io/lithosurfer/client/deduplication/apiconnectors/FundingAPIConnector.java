@@ -12,7 +12,7 @@ public class FundingAPIConnector extends AbstractAPIConnector<FundingDTO> {
 
 	protected String getFingerprint(FundingDTO entityDTO) {
 
-		return entityDTO.getFundingBodyName() + "|" + entityDTO.getName() + "|" + entityDTO.getName() + "|" + entityDTO.getYear();
+		return entityDTO.getFundingBodyName() + "|" + entityDTO.getName() + "|" + entityDTO.getGrandNumber() + "|"+ entityDTO.getDescription()+ "|" + entityDTO.getYear();
 
 	}
 
