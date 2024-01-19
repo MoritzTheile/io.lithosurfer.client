@@ -1,6 +1,7 @@
-package io.lithosurfer.client.deduplication;
+package io.lithosurfer.client.scripts;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -10,16 +11,18 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestTemplate;
 
 import io.lithosurfer.client.LithoAuth;
-import io.lithosurfer.client.deduplication.DeduplicationArguments.MODE;
-import io.lithosurfer.client.deduplication.apiconnectors.FundingAPIConnector;
-import io.lithosurfer.client.deduplication.apiconnectors.LiteratureAPIConnector;
-import io.lithosurfer.client.deduplication.apiconnectors.PeopleAPIConnector;
+import io.lithosurfer.client.scripts.ScriptsArguments.MODE;
+import io.lithosurfer.client.scripts.apiconnectors.FundingAPIConnector;
+import io.lithosurfer.client.scripts.apiconnectors.GCDataPointAPIConnector;
+import io.lithosurfer.client.scripts.apiconnectors.LiteratureAPIConnector;
+import io.lithosurfer.client.scripts.apiconnectors.PeopleAPIConnector;
+import io.lithosurfer.client.scripts.dtos.GCDataPointDTO;
 
 @SpringBootApplication
-public class DeduplicationApplication {
+public class ScriptsApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(DeduplicationApplication.class, args);
+		SpringApplication.run(ScriptsApplication.class, args);
 
 	}
 
@@ -39,7 +42,7 @@ public class DeduplicationApplication {
 			try {
 
 				// Wrapping command line arguments in an object.
-				DeduplicationArguments arguments = new DeduplicationArguments(args);
+				ScriptsArguments arguments = new ScriptsArguments(args);
 
 				// Authenticating to get an JSON Web Token.
 				LithoAuth lithoAuth = new LithoAuth(arguments.getEndpoint(), arguments.getUsername(), arguments.getPassword());
@@ -49,6 +52,8 @@ public class DeduplicationApplication {
 					report(lithoAuth, authenticationKey);
 				}else if(MODE.merge.equals(arguments.getMode())) {
 					merge(lithoAuth, authenticationKey);
+				}else if(MODE.script1.equals(arguments.getMode())) {
+					script1(lithoAuth, authenticationKey);
 				}
 
 
@@ -94,5 +99,26 @@ public class DeduplicationApplication {
 		}
 	}
 
-	
+
+	/**
+	 * This script deletes all GCDataPoints in a given package. 
+	 */
+	private void script1(LithoAuth lithoAuth, String authenticationKey) throws Exception, IOException {
+		
+		// change this to target package
+		int id = -1;
+
+		String query = "&dataPointLithoCriteria.dataPackageId.equals=" + id;
+		
+		GCDataPointAPIConnector apiConnector = new GCDataPointAPIConnector(lithoAuth.endpoint);
+		
+		List<GCDataPointDTO> dtos = apiConnector.find(authenticationKey, query);
+		
+		System.out.println("dtos.size() " + dtos.size());
+		int i = 1;
+		for(GCDataPointDTO dto : dtos) {
+			apiConnector.deleteById(authenticationKey, dto.getId());
+			System.out.println(i++ +" deleted GCDataPoint with id " + dto.getId());
+		}
+	}
 }

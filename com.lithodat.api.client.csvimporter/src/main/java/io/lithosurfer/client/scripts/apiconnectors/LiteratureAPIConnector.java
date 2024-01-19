@@ -1,7 +1,7 @@
-package io.lithosurfer.client.deduplication.apiconnectors;
+package io.lithosurfer.client.scripts.apiconnectors;
 
-import io.lithosurfer.client.deduplication.AbstractAPIConnector;
-import io.lithosurfer.client.deduplication.dtos.LiteratureDTO;
+import io.lithosurfer.client.scripts.AbstractAPIConnector;
+import io.lithosurfer.client.scripts.dtos.LiteratureDTO;
 
 public class LiteratureAPIConnector extends AbstractAPIConnector<LiteratureDTO> {
 	

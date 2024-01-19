@@ -1,4 +1,4 @@
-package io.lithosurfer.client.deduplication;
+package io.lithosurfer.client.scripts;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -17,11 +17,11 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
-import io.lithosurfer.client.deduplication.dtos.Identifyable;
+import io.lithosurfer.client.scripts.dtos.Identifyable;
 import io.lithosurfer.client.util.StaticUtils;
 
 public abstract class AbstractAPIConnector<T extends Identifyable> {
-	private static final int PAGE_SIZE = 1000;
+	private static final int PAGE_SIZE = 20;
 	private final String entityUrl;
 	private final String mergeUrl;
 
@@ -33,8 +33,12 @@ public abstract class AbstractAPIConnector<T extends Identifyable> {
 	}
 
 	protected abstract String getServicePath();
-
+	
+	
 	public List<T> getAll(String token) throws Exception {
+		 return find(token, "");
+	}
+	public List<T> find(String token, String queryString) throws Exception {
 
 		HttpHeaders headers = new HttpHeaders();
 
@@ -49,14 +53,14 @@ public abstract class AbstractAPIConnector<T extends Identifyable> {
 		List<T> page = null;
 
 		while (page == null || page.size() == PAGE_SIZE) {
-			
-			System.out.println("calling "+ entityUrl);
 
+			System.out.println("calling " + entityUrl);
+
+			String query = "?page=" + pageNumber + "&size=" + PAGE_SIZE +"&"+ queryString;
+			System.out.println("query = "+ query);
 			ResponseEntity<T[]> result = new RestTemplate().exchange(
 
-					entityUrl + "?page=" + pageNumber + "&size=" + PAGE_SIZE, HttpMethod.GET, 
-					new HttpEntity<T[]>(headers), 
-					getServiceReturnClass());
+					entityUrl + query, HttpMethod.GET, new HttpEntity<T[]>(headers), getServiceReturnClass());
 			
 			page = Arrays.asList(result.getBody());
 			entities.addAll(page);
@@ -68,40 +72,56 @@ public abstract class AbstractAPIConnector<T extends Identifyable> {
 
 	}
 
+	
+	public void deleteById(String token, long id) throws Exception {
+		HttpHeaders headers = new HttpHeaders();
+
+		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.setBearerAuth(token);
+
+		System.out.println("calling " + entityUrl);
+
+		new RestTemplate().exchange(
+
+				entityUrl + "/" + id, HttpMethod.DELETE, new HttpEntity<T[]>(headers), getServiceReturnClass());
+
+	}
+
 	public void findDuplicatesAndMerge(String authenticationKey) throws Exception, IOException {
-		System.out.println("-------------------------------------\nstarting findDuplicatesAndMerge for "+ getSimplifiedClassName()+" ...");
+		System.out.println("-------------------------------------\nstarting findDuplicatesAndMerge for " + getSimplifiedClassName() + " ...");
 
 		Map<Long, List<Long>> duplicateSets = findDuplicates(authenticationKey);
 
-		System.out.println(getSimplifiedClassName()+" count before merging: " + getAll(authenticationKey).size());
+		System.out.println(getSimplifiedClassName() + " count before merging: " + getAll(authenticationKey).size());
 		mergeDuplicates(authenticationKey, duplicateSets);
-		System.out.println(getSimplifiedClassName()+" count after merging: " + getAll(authenticationKey).size());
+		System.out.println(getSimplifiedClassName() + " count after merging: " + getAll(authenticationKey).size());
 
-		System.out.println("... finished findDuplicatesAndMerge for "+ getSimplifiedClassName()+" ...\n-------------------------------------");
+		System.out.println("... finished findDuplicatesAndMerge for " + getSimplifiedClassName() + " ...\n-------------------------------------");
 	}
-	
+
 	public void findDuplicatesAndReport(String authenticationKey) throws Exception, IOException {
-		System.out.println("-------------------------------------\nstarting findDuplicatesAndReport for "+ getSimplifiedClassName()+" ...");
-		
+		System.out.println("-------------------------------------\nstarting findDuplicatesAndReport for " + getSimplifiedClassName() + " ...");
+
 		Map<Long, List<Long>> duplicateSets = findDuplicates(authenticationKey);
 
 		int totalSets = duplicateSets.values().size();
-        int biggestSize = duplicateSets.values().stream().mapToInt(List::size).max().orElse(0);
-        int totalIds = duplicateSets.values().stream().mapToInt(List::size).sum();
+		int biggestSize = duplicateSets.values().stream().mapToInt(List::size).max().orElse(0);
+		int totalIds = duplicateSets.values().stream().mapToInt(List::size).sum();
 
-        System.out.println("total_sets: "+ totalSets);
-        System.out.println("total_ids: " + totalIds);
-        System.out.println("biggest_size: " +  biggestSize);
-		
-		String filename = "duplicateSets."+getSimplifiedClassName()+".json";
+		System.out.println("total_sets: " + totalSets);
+		System.out.println("total_ids: " + totalIds);
+		System.out.println("biggest_size: " + biggestSize);
+
+		String filename = "duplicateSets." + getSimplifiedClassName() + ".json";
 		StaticUtils.writeObjectToFile(duplicateSets, filename);
 		System.out.println("For all duplicates see file " + filename);
 
-		System.out.println("... finished findDuplicatesAndReport for "+ getSimplifiedClassName()+" ...\n-------------------------------------");
+		System.out.println("... finished findDuplicatesAndReport for " + getSimplifiedClassName() + " ...\n-------------------------------------");
 	}
 
 	private String getSimplifiedClassName() {
-		return getServiceReturnClass().getSimpleName().replaceAll("[\\[\\]]","");
+		return getServiceReturnClass().getSimpleName().replaceAll("[\\[\\]]", "");
 	}
 
 	private Map<Long, List<Long>> findDuplicates(String authenticationKey) throws Exception {
@@ -146,7 +166,7 @@ public abstract class AbstractAPIConnector<T extends Identifyable> {
 
 	}
 
-	private  Map<String, List<T>> findSurvivorWithDuplicates(List<T> allEntities) {
+	private Map<String, List<T>> findSurvivorWithDuplicates(List<T> allEntities) {
 
 		Map<String, List<T>> fingerprint2duplicates = new HashMap<>();
 
@@ -168,7 +188,7 @@ public abstract class AbstractAPIConnector<T extends Identifyable> {
 
 	}
 
-	private  Map<Long, List<Long>> translateToIdMap(Map<String, List<T>> fingerprint2duplicates) {
+	private Map<Long, List<Long>> translateToIdMap(Map<String, List<T>> fingerprint2duplicates) {
 
 		Map<Long, List<Long>> survivor2duplicates = new HashMap<>();
 
@@ -190,5 +210,6 @@ public abstract class AbstractAPIConnector<T extends Identifyable> {
 	}
 
 	protected abstract String getFingerprint(T entityDTO);
+
 	protected abstract Class<T[]> getServiceReturnClass();
 }

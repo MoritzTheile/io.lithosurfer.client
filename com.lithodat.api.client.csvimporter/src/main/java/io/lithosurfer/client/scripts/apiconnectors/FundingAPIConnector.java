@@ -1,7 +1,7 @@
-package io.lithosurfer.client.deduplication.apiconnectors;
+package io.lithosurfer.client.scripts.apiconnectors;
 
-import io.lithosurfer.client.deduplication.AbstractAPIConnector;
-import io.lithosurfer.client.deduplication.dtos.FundingDTO;
+import io.lithosurfer.client.scripts.AbstractAPIConnector;
+import io.lithosurfer.client.scripts.dtos.FundingDTO;
 
 public class FundingAPIConnector extends AbstractAPIConnector<FundingDTO> {
 	

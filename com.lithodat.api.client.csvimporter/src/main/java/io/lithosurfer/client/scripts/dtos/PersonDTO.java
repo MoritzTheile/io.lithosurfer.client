@@ -1,4 +1,4 @@
-package io.lithosurfer.client.deduplication.dtos;
+package io.lithosurfer.client.scripts.dtos;
 import java.time.Instant;
 import java.io.Serializable;
 import java.util.Objects;

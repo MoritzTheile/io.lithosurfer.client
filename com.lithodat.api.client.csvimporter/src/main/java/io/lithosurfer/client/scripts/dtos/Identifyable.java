@@ -1,4 +1,4 @@
-package io.lithosurfer.client.deduplication.dtos;
+package io.lithosurfer.client.scripts.dtos;
 
 public interface Identifyable {
 

@@ -1,4 +1,4 @@
-package io.lithosurfer.client.deduplication._outdated;
+package io.lithosurfer.client.scripts._outdated;
 
 import java.io.File;
 import java.util.Arrays;

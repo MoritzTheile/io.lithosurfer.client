@@ -1,16 +1,16 @@
-package io.lithosurfer.client.deduplication;
+package io.lithosurfer.client.scripts;
 
 import java.util.Arrays;
 
 import io.lithosurfer.client.LithoArguments;
 
-public class DeduplicationArguments extends LithoArguments {
+public class ScriptsArguments extends LithoArguments {
 
-	public enum MODE {merge, report}
+	public enum MODE {merge, report, script1}
 	
 	private MODE mode;
 	
-	public DeduplicationArguments(String[] args) throws Exception {
+	public ScriptsArguments(String[] args) throws Exception {
 		super(args);
 		try {
 			mode = MODE.valueOf(args [3]);
