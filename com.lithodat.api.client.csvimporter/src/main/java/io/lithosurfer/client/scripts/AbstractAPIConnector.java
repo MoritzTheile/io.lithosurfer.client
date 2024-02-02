@@ -17,6 +17,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
+import io.lithosurfer.client.scripts.dtos.GCDataPointDTO;
 import io.lithosurfer.client.scripts.dtos.Identifyable;
 import io.lithosurfer.client.util.StaticUtils;
 
@@ -33,11 +34,11 @@ public abstract class AbstractAPIConnector<T extends Identifyable> {
 	}
 
 	protected abstract String getServicePath();
-	
-	
+
 	public List<T> getAll(String token) throws Exception {
-		 return find(token, "");
+		return find(token, "");
 	}
+
 	public List<T> find(String token, String queryString) throws Exception {
 
 		HttpHeaders headers = new HttpHeaders();
@@ -56,12 +57,12 @@ public abstract class AbstractAPIConnector<T extends Identifyable> {
 
 			System.out.println("calling " + entityUrl);
 
-			String query = "?page=" + pageNumber + "&size=" + PAGE_SIZE +"&"+ queryString;
-			System.out.println("query = "+ query);
+			String query = "?page=" + pageNumber + "&size=" + PAGE_SIZE + "&" + queryString;
+			System.out.println("query = " + query);
 			ResponseEntity<T[]> result = new RestTemplate().exchange(
 
 					entityUrl + query, HttpMethod.GET, new HttpEntity<T[]>(headers), getServiceReturnClass());
-			
+
 			page = Arrays.asList(result.getBody());
 			entities.addAll(page);
 			pageNumber++;
@@ -72,7 +73,22 @@ public abstract class AbstractAPIConnector<T extends Identifyable> {
 
 	}
 
-	
+	public List<Long> findIds(String token, String queryString) throws Exception {
+
+		HttpHeaders headers = new HttpHeaders();
+
+		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.setBearerAuth(token);
+
+		String query = "?&" + queryString;
+		System.out.println("query = " + query);
+		ResponseEntity<Long[]> result = new RestTemplate().exchange(entityUrl+"/findIds" + query, HttpMethod.GET, new HttpEntity<Long[]>(headers), Long[].class);
+
+		return Arrays.asList(result.getBody());
+
+	}
+
 	public void deleteById(String token, long id) throws Exception {
 		HttpHeaders headers = new HttpHeaders();
 

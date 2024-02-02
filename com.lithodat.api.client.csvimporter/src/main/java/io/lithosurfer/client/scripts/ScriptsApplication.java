@@ -106,19 +106,20 @@ public class ScriptsApplication {
 	private void script1(LithoAuth lithoAuth, String authenticationKey) throws Exception, IOException {
 		
 		// change this to target package
-		int id = -1;
+		int packageId = -1;
 
-		String query = "&dataPointLithoCriteria.dataPackageId.equals=" + id;
+		String query = "&dataPointLithoCriteria.dataPackageId.equals=" + packageId;
 		
 		GCDataPointAPIConnector apiConnector = new GCDataPointAPIConnector(lithoAuth.endpoint);
 		
-		List<GCDataPointDTO> dtos = apiConnector.find(authenticationKey, query);
+		List<Long> ids = apiConnector.findIds(authenticationKey, query);
 		
-		System.out.println("dtos.size() " + dtos.size());
-		int i = 1;
-		for(GCDataPointDTO dto : dtos) {
-			apiConnector.deleteById(authenticationKey, dto.getId());
-			System.out.println(i++ +" deleted GCDataPoint with id " + dto.getId());
+		System.out.println("ids.size() " + ids.size());
+		int i = 0;
+		for(Long id : ids) {
+			i++;
+			apiConnector.deleteById(authenticationKey, id);
+			System.out.println(i +" deleted GCDataPoint with id " + id);
 		}
 	}
 }
