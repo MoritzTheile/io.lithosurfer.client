@@ -10,13 +10,14 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestTemplate;
 
+import modelGeneratedFromSwagger.GCDataPointLithoDTO;
+
 import io.lithosurfer.client.LithoAuth;
 import io.lithosurfer.client.scripts.ScriptsArguments.MODE;
 import io.lithosurfer.client.scripts.apiconnectors.FundingAPIConnector;
 import io.lithosurfer.client.scripts.apiconnectors.GCDataPointAPIConnector;
 import io.lithosurfer.client.scripts.apiconnectors.LiteratureAPIConnector;
 import io.lithosurfer.client.scripts.apiconnectors.PeopleAPIConnector;
-import io.lithosurfer.client.scripts.dtos.GCDataPointDTO;
 
 @SpringBootApplication
 public class ScriptsApplication {
@@ -54,6 +55,8 @@ public class ScriptsApplication {
 					merge(lithoAuth, authenticationKey);
 				}else if(MODE.script1.equals(arguments.getMode())) {
 					script1(lithoAuth, authenticationKey);
+				}else if(MODE.script2.equals(arguments.getMode())) {
+					script2(lithoAuth, authenticationKey);
 				}
 
 
@@ -106,7 +109,7 @@ public class ScriptsApplication {
 	private void script1(LithoAuth lithoAuth, String authenticationKey) throws Exception, IOException {
 		
 		// change this to target package
-		int packageId = -1;
+		int packageId = -1; //6480201;
 
 		String query = "&dataPointLithoCriteria.dataPackageId.equals=" + packageId;
 		
@@ -122,4 +125,24 @@ public class ScriptsApplication {
 			System.out.println(i +" deleted GCDataPoint with id " + id);
 		}
 	}
+	/**
+	 * This script deletes all GCDataPoints in a given package. 
+	 */
+	private void script2(LithoAuth lithoAuth, String authenticationKey) throws Exception, IOException {
+		
+		// change this to target package
+		int packageId = 6480201;
+
+		String query = "&dataPointLithoCriteria.dataPackageId.equals=" + packageId;
+		
+		GCDataPointAPIConnector apiConnector = new GCDataPointAPIConnector(lithoAuth.endpoint);
+		
+		List<GCDataPointLithoDTO> dtos = apiConnector.find(authenticationKey, query);
+		
+		for(GCDataPointLithoDTO dto : dtos) {
+			
+			System.out.println(dto.getId() +"," + dto.getDataPointDTO().getName());
+		}
+	}
+
 }

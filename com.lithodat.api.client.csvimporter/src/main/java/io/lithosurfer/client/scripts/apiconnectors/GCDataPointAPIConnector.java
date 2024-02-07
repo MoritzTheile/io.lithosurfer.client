@@ -1,24 +1,26 @@
 package io.lithosurfer.client.scripts.apiconnectors;
 
-import io.lithosurfer.client.scripts.AbstractAPIConnector;
-import io.lithosurfer.client.scripts.dtos.GCDataPointDTO;
 
-public class GCDataPointAPIConnector extends AbstractAPIConnector<GCDataPointDTO> {
+
+import io.lithosurfer.client.scripts.AbstractAPIConnector;
+import modelGeneratedFromSwagger.GCDataPointLithoDTO;
+
+public class GCDataPointAPIConnector extends AbstractAPIConnector<GCDataPointLithoDTO> {
 	
 	
 	public GCDataPointAPIConnector(String endpoint) {
 		super(endpoint);
 	}
 
-	protected String getFingerprint(GCDataPointDTO entityDTO) {
+	protected String getFingerprint(GCDataPointLithoDTO entityDTO) {
 
 		return entityDTO.getId()+"";
 
 	}
 
 	@Override
-	protected Class<GCDataPointDTO[]> getServiceReturnClass() {
-		return GCDataPointDTO[].class;
+	protected Class<GCDataPointLithoDTO[]> getServiceReturnClass() {
+		return GCDataPointLithoDTO[].class;
 	}
 
 	@Override

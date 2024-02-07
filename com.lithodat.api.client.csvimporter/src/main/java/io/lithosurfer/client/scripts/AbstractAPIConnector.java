@@ -1,6 +1,7 @@
 package io.lithosurfer.client.scripts;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -17,11 +18,10 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
-import io.lithosurfer.client.scripts.dtos.GCDataPointDTO;
 import io.lithosurfer.client.scripts.dtos.Identifyable;
 import io.lithosurfer.client.util.StaticUtils;
 
-public abstract class AbstractAPIConnector<T extends Identifyable> {
+public abstract class AbstractAPIConnector<T> {
 	private static final int PAGE_SIZE = 20;
 	private final String entityUrl;
 	private final String mergeUrl;
@@ -204,7 +204,7 @@ public abstract class AbstractAPIConnector<T extends Identifyable> {
 
 	}
 
-	private Map<Long, List<Long>> translateToIdMap(Map<String, List<T>> fingerprint2duplicates) {
+	private Map<Long, List<Long>> translateToIdMap(Map<String, List<T>> fingerprint2duplicates) throws Exception {
 
 		Map<Long, List<Long>> survivor2duplicates = new HashMap<>();
 
@@ -214,15 +214,34 @@ public abstract class AbstractAPIConnector<T extends Identifyable> {
 
 			if (entities.size() >= 2) {
 
-				Long survivorId = entities.get(0).getId();
+				Long survivorId = (Long) getIdViaReflection(entities.get(0));
 				entities.remove(0);
-				survivor2duplicates.put(survivorId, entities.stream().map(e -> e.getId()).collect(Collectors.toList()));
+				survivor2duplicates.put(survivorId, entities.stream().map(e -> {
+					try {
+						return (Long)getIdViaReflection(e);
+					} catch (Exception e1) {
+						
+						e1.printStackTrace();
+					}
+					return null;
+				}).collect(Collectors.toList()));
 
 			}
 		}
 
 		return survivor2duplicates;
 
+	}
+	
+	private static Object getIdViaReflection(Object o) throws Exception {
+		Class<?> clazz = o.getClass();
+
+        // Step 2: Get the getId() method of 'myObject'
+        Method getIdMethod = clazz.getMethod("getId");
+
+        // Step 3: Invoke getId() on 'myObject'
+        return getIdMethod.invoke(o);
+		
 	}
 
 	protected abstract String getFingerprint(T entityDTO);
