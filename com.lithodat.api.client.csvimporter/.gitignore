@@ -33,3 +33,4 @@ build/
 .vscode/
 /report_literature.json
 /bin/
+/tmp/
