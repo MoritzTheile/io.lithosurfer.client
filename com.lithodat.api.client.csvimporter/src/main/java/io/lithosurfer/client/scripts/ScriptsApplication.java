@@ -10,14 +10,15 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestTemplate;
 
-import modelGeneratedFromSwagger.GCDataPointLithoDTO;
-
 import io.lithosurfer.client.LithoAuth;
 import io.lithosurfer.client.scripts.ScriptsArguments.MODE;
 import io.lithosurfer.client.scripts.apiconnectors.FundingAPIConnector;
 import io.lithosurfer.client.scripts.apiconnectors.GCDataPointAPIConnector;
 import io.lithosurfer.client.scripts.apiconnectors.LiteratureAPIConnector;
 import io.lithosurfer.client.scripts.apiconnectors.PeopleAPIConnector;
+import io.lithosurfer.client.scripts.apiconnectors.SampleAPIConnector;
+import io.lithosurfer.client.scripts.dtos.SampleWithLocationDTO;
+import modelGeneratedFromSwagger.GCDataPointLithoDTO;
 
 @SpringBootApplication
 public class ScriptsApplication {
@@ -57,7 +58,9 @@ public class ScriptsApplication {
 					script1(lithoAuth, authenticationKey);
 				}else if(MODE.script2.equals(arguments.getMode())) {
 					script2(lithoAuth, authenticationKey);
-				}
+				}else if(MODE.script3.equals(arguments.getMode())) {
+				script3(lithoAuth, authenticationKey);
+			}
 
 
 			} catch (Exception e) {
@@ -142,6 +145,25 @@ public class ScriptsApplication {
 		for(GCDataPointLithoDTO dto : dtos) {
 			
 			System.out.println(dto.getId() +"," + dto.getDataPointDTO().getName());
+		}
+	}
+	/**
+	 * This script deletes all GCDataPoints in a given package. 
+	 */
+	private void script3(LithoAuth lithoAuth, String authenticationKey) throws Exception, IOException {
+		
+		// change this to target package
+		int packageId = 18380851;
+
+		String query = "&dataPackageId.equals=" + packageId;
+		
+		SampleAPIConnector apiConnector = new SampleAPIConnector(lithoAuth.endpoint);
+		
+		List<SampleWithLocationDTO> dtos = apiConnector.find(authenticationKey, query);
+		
+		for(SampleWithLocationDTO dto : dtos) {
+			
+			System.out.println(dto.getSampleDTO().getId() +"," + dto.getSampleDTO().getDataPackageName()+"," + dto.getSampleDTO().getName());
 		}
 	}
 

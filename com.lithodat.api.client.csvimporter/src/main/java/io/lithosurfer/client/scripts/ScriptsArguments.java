@@ -6,7 +6,7 @@ import io.lithosurfer.client.LithoArguments;
 
 public class ScriptsArguments extends LithoArguments {
 
-	public enum MODE {merge, report, script1, script2}
+	public enum MODE {merge, report, script1, script2, script3}
 	
 	private MODE mode;
 	
