@@ -1,0 +1,36 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Current File",
+            "request": "launch",
+            "mainClass": "${file}"
+        },
+        {
+            "type": "java",
+            "name": "CSVImporterApplication",
+            "request": "launch",
+            "mainClass": "io.lithosurfer.client.csvimporter.CSVImporterApplication",
+            "projectName": "com.lithodat.api.client.csvimporter"
+        },
+        {
+            "type": "java",
+            "name": "ScriptsApplication",
+            "request": "launch",
+            "mainClass": "io.lithosurfer.client.scripts.ScriptsApplication",
+            "projectName": "com.lithodat.api.client.csvimporter",
+            "args": "https://testapp.lithodat.com kimberlyz Kimberly1234 report"
+        },
+        {
+            "type": "java",
+            "name": "Fundings",
+            "request": "launch",
+            "mainClass": "io.lithosurfer.client.scripts._outdated.Fundings",
+            "projectName": "com.lithodat.api.client.csvimporter"
+        }
+    ]
+}

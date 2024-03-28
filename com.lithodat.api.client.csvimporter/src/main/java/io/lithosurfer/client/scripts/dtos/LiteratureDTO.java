@@ -168,10 +168,20 @@ public class LiteratureDTO implements Serializable, Identifyable {
     }
 
     public String getDoi() {
+        // Replace http and https with empty string
+        if (doi != null) {
+            doi = doi.replaceAll("https://", "");
+            doi = doi.replaceAll("http://", "");
+        }
         return doi;
     }
 
     public void setDoi(String doi) {
+        // Replace http and https with empty string
+        if (doi != null) {
+            doi = doi.replaceAll("https://", "");
+            doi = doi.replaceAll("http://", "");
+        }
         this.doi = doi;
     }
 
