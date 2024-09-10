@@ -14,6 +14,8 @@ import org.springframework.web.client.RestTemplate;
 
 import io.lithosurfer.client.LithoAuth;
 import io.lithosurfer.client.csvimporter.CSVImporterArguments.IMPORT_TYPE;
+import io.lithosurfer.client.csvimporter.Labs.LabDTO;
+import io.lithosurfer.client.csvimporter.Labs.LabsImporter;
 import io.lithosurfer.client.csvimporter.literature.LiteratureDTO;
 import io.lithosurfer.client.csvimporter.literature.LiteratureImporter;
 import io.lithosurfer.client.csvimporter.material.MaterialDTO;
@@ -144,7 +146,16 @@ public class CSVImporterApplication {
 					importer.createOrUpdate(dto);
 				}
 			}
+            if (IMPORT_TYPE.LAB.equals(arguments.getImportType())) {
+                LabsImporter labsImporter = new LabsImporter(jwtToken, arguments.getEndpoint());
 
+                for (Map<String, String> rowAsMap : csvFileReader.getAllRowsAsMap()) {
+                    LabDTO labDTO = mapRowToLabsDTO(rowAsMap);
+
+                        labsImporter.upload(labDTO);
+
+             }
+            }
 			if (IMPORT_TYPE.FILTER_MATERIAL.equals(arguments.getImportType())) {
 				int counter = 0;
 				// Uploading each row:
@@ -427,7 +438,25 @@ public class CSVImporterApplication {
 		return dto;
 
 	}
-
+    private LabDTO mapRowToLabsDTO(Map<String, String> rowAsMap) {
+        LabDTO dto = new LabDTO();
+        dto.setName(rowAsMap.get("name"));
+        dto.setDescription(rowAsMap.get("comments"));
+        dto.setOrganisation(rowAsMap.get("organisation"));
+        dto.setCity(rowAsMap.get("city"));
+        dto.setCountryName(rowAsMap.get("countryName"));
+        String countryIdString = rowAsMap.get("countryId");
+        if (countryIdString != null && !countryIdString.isEmpty()) {
+            try {
+                dto.setCountryId(Long.parseLong(countryIdString));
+            } catch (NumberFormatException e) {
+                dto.setCountryId(null); // Or handle as appropriate
+            }
+        } else {
+            dto.setCountryId(null); // Set to null or default value if countryId is not provided
+        }
+        return dto;
+    }
 	private String shortTo256(String string) {
 		if (string.length() > 255) {
 			return string.substring(0, 254);
