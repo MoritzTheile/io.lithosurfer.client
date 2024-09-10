@@ -8,7 +8,7 @@ public class CSVImporterArguments extends LithoArguments {
 
 	// an enumeration to keep track of supported imports
 	public static enum IMPORT_TYPE {
-		LITERATURE, MATERIAL, FILTER_MATERIAL
+		LAB, LITERATURE, MATERIAL, FILTER_MATERIAL
 	};
 
 	private final IMPORT_TYPE importType;
