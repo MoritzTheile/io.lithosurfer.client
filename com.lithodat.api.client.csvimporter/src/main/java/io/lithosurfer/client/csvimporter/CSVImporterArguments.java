@@ -8,7 +8,18 @@ public class CSVImporterArguments extends LithoArguments {
 
 	// an enumeration to keep track of supported imports
 	public static enum IMPORT_TYPE {
-		LAB, LITERATURE, MATERIAL, FILTER_MATERIAL
+		LAB,
+		LITERATURE,
+		MATERIAL,
+		FILTER_MATERIAL,
+		LDEPOSITTYPE,
+		LAGERELATIONSHIP,
+		LAGEMETHOD,
+		LDEPOSITAGETYPE,
+		LCOMMODITY,
+		LECONOMICVIABILITY,
+		LRESOURCECLASSIFICATION,
+		LOPERATINGSTATUS
 	};
 
 	private final IMPORT_TYPE importType;
@@ -23,9 +34,6 @@ public class CSVImporterArguments extends LithoArguments {
 
 		importType = toEnum(args[3]);
 		csvFile = toFile(args[4]);
-		
-		
-
 	}
 
 	private IMPORT_TYPE toEnum(String importType) throws Exception {

@@ -1,0 +1,4 @@
+name,description
+Absolute,"Constrains the absolute age of the event, i.e. the event occured at this age or within associated uncertainty"
+Maximum,"Constrains the miximum age of the event, thus the even cannot have occured prior to the reported age"
+Minimum,"Constrains the minimum age of the event, thus the even cannot have occured after the reported age"
