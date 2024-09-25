@@ -14,6 +14,8 @@ import org.springframework.web.client.RestTemplate;
 
 import io.lithosurfer.client.LithoAuth;
 import io.lithosurfer.client.csvimporter.CSVImporterArguments.IMPORT_TYPE;
+import io.lithosurfer.client.csvimporter.DepositModels.DepositModelsDTO;
+import io.lithosurfer.client.csvimporter.DepositModels.DepositModelsImporter;
 import io.lithosurfer.client.csvimporter.Labs.LabDTO;
 import io.lithosurfer.client.csvimporter.Labs.LabsImporter;
 import io.lithosurfer.client.csvimporter.literature.LiteratureDTO;
@@ -43,7 +45,6 @@ public class CSVImporterApplication {
 	public CommandLineRunner run(RestTemplate restTemplate) throws Exception {
 
 		return args -> {
-
 			// Wrapping command line arguments in an object.
 			CSVImporterArguments arguments = new CSVImporterArguments(args);
 
@@ -177,7 +178,94 @@ public class CSVImporterApplication {
 
 				}
 			}
+			// Deposit LDepositType model Importer
+		      if (IMPORT_TYPE.LDEPOSITTYPE.equals(arguments.getImportType())) {
+		                DepositModelsImporter depositModelsImporter = new DepositModelsImporter(jwtToken, arguments.getEndpoint(),"/api/deposit/LDepositType");
+		                
+		                for (Map<String, String> rowAsMap : csvFileReader.getAllRowsAsMap()) {
+		                	DepositModelsDTO depositModelsDTO = mapRowToDepositModelsDTO(rowAsMap);
+		                   
+		                    depositModelsImporter.upload(depositModelsDTO);
 
+		                }
+		       }
+			// Deposit LAgeRelationship model Importer
+		      if (IMPORT_TYPE.LAGERELATIONSHIP.equals(arguments.getImportType())) {
+		                DepositModelsImporter depositModelsImporter = new DepositModelsImporter(jwtToken, arguments.getEndpoint(),"/api/deposit/LAgeRelationship");
+		                
+		                for (Map<String, String> rowAsMap : csvFileReader.getAllRowsAsMap()) {
+		                	DepositModelsDTO depositModelsDTO = mapRowToDepositModelsDTO(rowAsMap);
+		                   
+		                    depositModelsImporter.upload(depositModelsDTO);
+
+		                }
+		       }
+			// Deposit LAgeMethod model Importer
+		      if (IMPORT_TYPE.LAGEMETHOD.equals(arguments.getImportType())) {
+		                DepositModelsImporter depositModelsImporter = new DepositModelsImporter(jwtToken, arguments.getEndpoint(),"/api/deposit/LAgeMethod");
+		                
+		                for (Map<String, String> rowAsMap : csvFileReader.getAllRowsAsMap()) {
+		                	DepositModelsDTO depositModelsDTO = mapRowToDepositModelsDTO(rowAsMap);
+		                   
+		                    depositModelsImporter.upload(depositModelsDTO);
+
+		                }
+		       }
+			// Deposit LDepositAgeType  model Importer
+		      if (IMPORT_TYPE.LDEPOSITAGETYPE.equals(arguments.getImportType())) {
+		                DepositModelsImporter depositModelsImporter = new DepositModelsImporter(jwtToken, arguments.getEndpoint(),"/api/deposit/LDepositAgeType");
+		                
+		                for (Map<String, String> rowAsMap : csvFileReader.getAllRowsAsMap()) {
+		                	DepositModelsDTO depositModelsDTO = mapRowToDepositModelsDTO(rowAsMap);
+		                   
+		                    depositModelsImporter.upload(depositModelsDTO);
+
+		                }
+		       }
+			// Deposit LCommodity  model Importer
+		      if (IMPORT_TYPE.LCOMMODITY.equals(arguments.getImportType())) {
+		                DepositModelsImporter depositModelsImporter = new DepositModelsImporter(jwtToken, arguments.getEndpoint(),"/api/deposit/LCommodity");
+		                
+		                for (Map<String, String> rowAsMap : csvFileReader.getAllRowsAsMap()) {
+		                	DepositModelsDTO depositModelsDTO = mapRowToDepositModelsDTO(rowAsMap);
+		                   
+		                    depositModelsImporter.upload(depositModelsDTO);
+
+		                }
+		       }
+			// Deposit LEconomicViability  model Importer
+		      if (IMPORT_TYPE.LECONOMICVIABILITY.equals(arguments.getImportType())) {
+		                DepositModelsImporter depositModelsImporter = new DepositModelsImporter(jwtToken, arguments.getEndpoint(),"/api/deposit/LEconomicViability");
+		                
+		                for (Map<String, String> rowAsMap : csvFileReader.getAllRowsAsMap()) {
+		                	DepositModelsDTO depositModelsDTO = mapRowToDepositModelsDTO(rowAsMap);
+		                   
+		                    depositModelsImporter.upload(depositModelsDTO);
+
+		                }
+		       }
+			 // Deposit LResourceClassification  model Importer
+		      if (IMPORT_TYPE.LRESOURCECLASSIFICATION.equals(arguments.getImportType())) {
+		                DepositModelsImporter depositModelsImporter = new DepositModelsImporter(jwtToken, arguments.getEndpoint(),"/api/deposit/LResourceClassification");
+		                
+		                for (Map<String, String> rowAsMap : csvFileReader.getAllRowsAsMap()) {
+		                	DepositModelsDTO depositModelsDTO = mapRowToDepositModelsDTO(rowAsMap);
+		                   
+		                    depositModelsImporter.upload(depositModelsDTO);
+
+		                }
+		       }
+		 // Deposit LOperatingStatus  model Importer
+		      if (IMPORT_TYPE.LOPERATINGSTATUS.equals(arguments.getImportType())) {
+		                DepositModelsImporter depositModelsImporter = new DepositModelsImporter(jwtToken, arguments.getEndpoint(),"/api/deposit/LOperatingStatus");
+		                
+		                for (Map<String, String> rowAsMap : csvFileReader.getAllRowsAsMap()) {
+		                	DepositModelsDTO depositModelsDTO = mapRowToDepositModelsDTO(rowAsMap);
+		                   
+		                    depositModelsImporter.upload(depositModelsDTO);
+
+		                }
+		       }
 			{// Brute force shutdown is used to make things not more complicated than necessary...
 				System.out.println("shutting down with System.exit(0)");
 				System.exit(0);
@@ -457,7 +545,16 @@ public class CSVImporterApplication {
         }
         return dto;
     }
-	private String shortTo256(String string) {
+	
+	private DepositModelsDTO mapRowToDepositModelsDTO(Map<String, String> rowAsMap) {
+		DepositModelsDTO dto = new DepositModelsDTO();
+		dto.setName(rowAsMap.get("name"));
+		dto.setPath(rowAsMap.get("path"));
+		dto.setDescription(rowAsMap.get("description"));
+	    return dto;
+	}
+	
+    private String shortTo256(String string) {
 		if (string.length() > 255) {
 			return string.substring(0, 254);
 		}
